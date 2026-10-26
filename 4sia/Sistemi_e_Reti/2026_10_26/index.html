@@ -117,7 +117,7 @@ const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la
 // Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
 // VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
 // (Questa tabella equivale alla precedente per 25 domande: 3 corrette = 12%, 7 = 28%, 10 = 40%, ...)
-const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[48,6],[56,6.5],[64,7],[72,7.5],[80,8],[92,8.5],[96,9],[100,10]];
+const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[50,6],[55,6.5],[65,7],[70,7.5],[75,8],[80,8.5],[95,9],[100,10]];
 const DOMANDE = [
  {"q": "Dove si colloca il livello Data Link nel modello ISO/OSI?", "o": ["Primo livello", "Terzo livello", "Ultimo livello", "Secondo livello"], "c": 3,"p":20,"p":3},
  {"q": "Di cosa si occupa il livello Data Link?", "o": ["Del trasferimento dati da un nodo A a un nodo B adiacenti", "Del trasferimento dati da un nodo A a un nodo B interconnessi da un router", "Del trasferimento dati da un nodo A a un nodo B in una rete complessa", "Di instradare i pacchetti tra reti diverse"], "c": 0,"p":3},
@@ -134,7 +134,7 @@ const DOMANDE = [
  {"q": "Nel bit stuffing dopo quanti 1 consecutivi viene inserito uno 0?", "o": ["7", "6", "5", "4"], "c": 2,"p":3},
  {"q": "Quale affermazione è corretta?", "o": ["Il bit di parità è utilizzato per correggere errori su brevi distanze", "Il CRC si calcola con modulo 256", "Il Checksum condivide un polinomio generatore", "nessuna delle precedenti"], "c": 3,"p":3}, 
  {"q": "Quale affermazione è corretta?:", "o": ["Il CRC rileva e corregge errori", "Il bit di parità rileva un numero dispari di errori", "Il Checksum corregge gli errori", "Nessuna delle precedenti"], "c": 1,"p":3}, 
- {"q": "Qual è il comportamento dell'hub'?", "o": ["Inoltra il segnale ricevuto alla porta corretta", "Non inoltra segnali", "Controlla il MAC Address del destinatario e poi inoltra il segnale ricevuto", "Inoltra il segnale ricevuto a tutte le porte"], "c": 4,"p":3},
+ {"q": "Qual è il comportamento dell'hub'?", "o": ["Inoltra il segnale ricevuto alla porta corretta", "Non inoltra segnali", "Controlla il MAC Address del destinatario e poi inoltra il segnale ricevuto", "Inoltra il segnale ricevuto a tutte le porte"], "c": 4,"p":4},
  {"q": "Qual è il comportamento del repeater?", "o": ["Determina l'IP del destinatario e inoltra il messaggio", "Determina il MAC Address del sorgente e restituisce il messaggio", "Trasforma i segnali analogici in digitali", "Inoltra il segnale ricevuto a tutte le porte"], "c": 3,"p":4},
  {"q": "Qual è il comportamento dello switch?:", "o": ["Inoltra il segnale ricevuto alla porta corretta", "Determina l'IP del destinatario e inoltra il messaggio", "Determina il MAC Address del sorgente e restituisce il messaggio", "Inoltra il segnale ricevuto a tutte le porte"], "c": 0,"p":5},
  {"q": "Ipotizzando che la sequenza da trasmettere sia 111001001 con bit di parità dispari, cosa viene effettivamente trasmesso?", "o": ["111001001", "111001000", "1110010010", "1110010011"], "c": 2,"p":6},
