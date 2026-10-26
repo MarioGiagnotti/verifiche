@@ -31,6 +31,7 @@
         .breadcrumb a:hover { text-decoration: underline; }
         footer { margin-top: 70px; padding: 30px 20px; text-align: center; background: #111827; color: #d1d5db; font-size: 0.9rem; }
         footer strong { color: white; }
+        .button.is-disabled {pointer-events: none;cursor: default;opacity: 0.6;}
         @media (max-width: 600px) { header { padding: 50px 20px; } header h1 { font-size: 2.1rem; } header p { font-size: 1rem; } .container { margin-top: 35px; } }
     </style>
 </head>
@@ -62,11 +63,12 @@
         </article>
 
         <!-- Template per future verifiche - duplica questa card -->
-        <article class="card" style="opacity:0.7;">
-            <div class="card-icon">📚</div>
-            <h3>Prossime verifiche</h3>
-            <p>Nuove verifiche verranno aggiunte in questa sezione durante l'anno scolastico.</p>
-            <span class="button" style="background:#9ca3af;">In arrivo</span>
+        <article class="card">
+            <div class="card-icon">📅</div>
+            <span class="badge">26 Ottobre 2026</span>
+            <h3>Verifica 2026_10_26</h3>
+            <p>Verifica di Sistemi e Reti del 23 Ottobre 2026. Accedi per svolgere l'attività.</p>
+            <a class="button is-disabled" href="2026_10_26/" tabindex="-1" aria-disabled="true">Apri verifica →</a>
         </article>
 
     </section>
