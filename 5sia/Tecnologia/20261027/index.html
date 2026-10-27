@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verifica</title>
+<style>
+/* ==== STILE ALLINEATO A verifiche/index.html ==== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+    line-height: 1.6;
+}
+.protect,.protect * { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+.protect input, .protect textarea, .protect code { -webkit-user-select:text; user-select:text; }
+.protect img { pointer-events:none; }
+@media print { body{display:none!important} }
+
+/* Header identico alle altre index */
+header {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 50px 20px 40px;
+    text-align: center;
+}
+header h1 { font-size: 2.2rem; margin-bottom: 12px; line-height: 1.2; }
+header p { max-width: 750px; margin: 8px auto 0; font-size: 1.05rem; opacity: 0.95; }
+
+.container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+.breadcrumb { margin-bottom: 20px; text-align: center; }
+.breadcrumb a { color: #2563eb; text-decoration: none; font-weight: bold; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.wrap { max-width: 600px; margin: 0 auto; }
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+.card h3 { color: #1e3a8a; margin-bottom: 10px; }
+.card p { color: #4b5563; }
+.info {
+    margin-top: 30px;
+    background: white;
+    border-left: 5px solid #2563eb;
+    padding: 18px 22px;
+    border-radius: 10px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.06);
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    color: #1f2937;
+    font-size: 16px;
+    margin: 8px 0 16px;
+}
+input[type=text]:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+.btn {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease;
+    text-decoration: none;
+}
+.btn:hover { background: #1d4ed8; }
+.btn.sec { background: transparent; color: #2563eb; border: 1px solid #2563eb; }
+.btn.sec:hover { background: #eff6ff; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.link { background:none; border:0; color: #6b7280; cursor:pointer; margin-top:18px; font-size:13px; text-decoration:underline; }
+
+footer {
+    margin-top: 70px;
+    padding: 30px 20px;
+    text-align: center;
+    background: #111827;
+    color: #d1d5db;
+    font-size: 0.9rem;
+}
+footer strong { color: white; }
+
+/* ==== QUIZ - mantiene logica ma con palette coordinata ==== */
+#quiz { display:none; position:fixed; inset:0; background:#f4f7fb; flex-direction:column; z-index:10; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+#quiz.on { display:flex; }
+.top {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:12px 18px; border-bottom:1px solid #e5e7eb; background:white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    flex-wrap: wrap;
+}
+.main { flex:1; display:flex; min-height:0; }
+.side {
+    width: 180px; border-right:1px solid #e5e7eb; background:white;
+    padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;
+}
+.side button {
+    padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; background:#f9fafb;
+    color:#1f2937; cursor:pointer; text-align:left; font-size:14px; transition: all 0.15s;
+}
+.side button:hover { border-color:#2563eb; }
+.side button.cur { border-color:#2563eb; background:#eff6ff; box-shadow:0 0 0 2px #2563eb inset; font-weight:700; color:#1e3a8a; }
+.center { flex:1; padding:32px; overflow-y:auto; max-width:900px; margin:0 auto; width:100%; }
+.q { font-size:1.4rem; font-weight:700; margin-bottom:22px; line-height:1.4; color:#1e3a8a; }
+.opt {
+    display:flex; align-items:center; gap:12px; padding:14px 16px;
+    border:1px solid #e5e7eb; border-radius:12px; background:white;
+    margin-bottom:10px; cursor:pointer; font-size:16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.15s;
+}
+.opt:hover { border-color:#93b4ff; transform: translateY(-1px); }
+.opt.sel { border-color:#2563eb; background:#eff6ff; }
+.box {
+    width:24px; height:24px; border:2px solid #9ca3af; border-radius:6px; flex:none;
+    display:grid; place-items:center; color:white; font-size:14px; font-weight:bold;
+    transition: all 0.15s;
+}
+.opt.sel .box { background:#2563eb; border-color:#2563eb; }
+.bottom {
+    display:flex; align-items:center; gap:14px; padding:12px 18px;
+    border-top:1px solid #e5e7eb; background:white;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+}
+.sq { display:flex; gap:8px; flex:1; flex-wrap:wrap; }
+.sq i { width:26px; height:26px; border-radius:6px; background:#e5e7eb; display:block; transition: background 0.2s; }
+.sq i.done { background:#2563eb; }
+
+.modal { position:fixed; inset:0; background:rgba(17,24,39,.55); display:none; place-items:center; padding:16px; z-index:20; backdrop-filter: blur(4px); }
+.modal.on { display:grid; }
+.modal .card { max-width:480px; width:100%; text-align:center; }
+.big { font-size:42px; font-weight:800; color:#1e3a8a; margin:10px 0; }
+code {
+    display:block; word-break:break-all; background:#f3f4f6; padding:12px; border-radius:8px;
+    font-size:12px; margin:10px 0; border:1px solid #e5e7eb; text-align:left;
+}
+table { width:100%; border-collapse:collapse; text-align:left; font-size:14px; }
+td,th { padding:8px; border-bottom:1px solid #e5e7eb; }
+#doc .card { max-width:980px; }
+.tw { overflow-x:auto; }
+.ok { color:#16a34a; font-weight:700; }
+.ko { color:#dc2626; font-weight:700; }
+textarea {
+    width:100%; min-height:100px; padding:10px; border:1px solid #d1d5db; border-radius:8px;
+    background:#f9fafb; color:#1f2937; font-size:13px; margin:8px 0;
+}
+.badge-test { display:inline-block; background:#fde68a; color:#92400e; padding:6px 12px; border-radius:20px; font-size:0.85rem; font-weight:bold; margin-bottom:12px; }
+
+@media (max-width:640px){
+    .side{width:96px; padding:8px} .side button{font-size:12px; padding:8px 6px} .center{padding:16px} header h1{font-size:1.6rem} .q{font-size:1.15rem}
+}
+</style>
+</head>
+<body class="protect">
+
+<header>
+  <h1 id="t">Verifica</h1>
+  <p id="desc"></p>
+  <p id="dur"></p>
+</header>
+
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../">← Torna a Tecnologia</a> &nbsp;·&nbsp; <a href="../../">5ª SIA</a> &nbsp;·&nbsp; <a href="../../../">Verifiche</a>
+  </div>
+
+  <div class="wrap" id="home">
+    <div class="card">
+      <div id="tb" class="badge-test" style="display:none">MODALITÀ TEST attiva: la verifica si può ripetere. Prima di darla agli studenti imposta MODALITA_TEST = false.</div>
+      <p style="margin-bottom:14px; color:#6b7280; font-size:0.95rem;">Inserisci il tuo nome e cognome per iniziare la verifica.</p>
+      <label for="nome" style="font-weight:bold; color:#1e3a8a;">Nome e cognome</label>
+      <input type="text" id="nome" autocomplete="off" placeholder="Es. Mario Rossi">
+      <button class="btn" id="start">Apri la verifica</button><br>
+      <button class="link" id="docBtn">Area docente</button>
+    </div>
+    <div class="info">
+      <strong style="color:#1e3a8a;">Informazioni:</strong> Il timer parte quando clicchi su "Apri la verifica" e non si ferma. Rispondi a tutte le domande e poi clicca su Consegna.
+    </div>
+  </div>
+</div>
+
+<div id="quiz">
+  <div class="top"><strong id="who" style="color:#1e3a8a;"></strong><strong id="timer" style="font-size:20px;font-variant-numeric:tabular-nums;color:#1e3a8a;"></strong><span id="prog" style="color:#6b7280"></span><button class="btn sec" id="rst" style="display:none;padding:6px 10px;font-size:13px">↺ Test</button></div>
+  <div class="main">
+    <div class="side" id="side"></div>
+    <div class="center"><div class="q" id="qt"></div><div id="opts"></div></div>
+  </div>
+  <div class="bottom"><div class="sq" id="sq"></div><button class="btn" id="submit">Consegna</button></div>
+</div>
+
+<div class="modal" id="res"><div class="card">
+  <h2 style="margin:0;color:#1e3a8a;">Verifica consegnata</h2>
+  <div class="big" id="score"></div>
+  <p id="saved" style="color:#4b5563;"></p>
+  <p style="margin-bottom:0;font-size:13px;color:#6b7280;">Codice di consegna (conservalo):</p><code id="code"></code>
+  <button class="btn sec" id="copy">Copia codice</button> <button class="btn" id="exit">Esci</button>
+</div></div>
+
+<div class="modal" id="dup"><div class="card">
+  <h2 style="margin:0 0 8px;color:#1e3a8a;">Verifica già eseguita</h2>
+  <p style="color:#4b5563;">Hai già consegnato questa verifica da questo dispositivo. Non è possibile ripeterla.</p>
+  <p style="margin-bottom:0;font-size:13px;color:#6b7280;">Il tuo codice di consegna:</p><code id="code2"></code>
+  <button class="btn sec" id="copy2">Copia codice</button> <button class="btn" id="dupok">Chiudi</button>
+</div></div>
+
+<div class="modal" id="confirm"><div class="card">
+  <h3 id="cmsg" style="margin-top:0;color:#1e3a8a;"></h3>
+  <button class="btn sec" id="cno">Torna alla verifica</button> <button class="btn" id="cyes">Consegna</button>
+</div></div>
+
+<div class="modal" id="doc"><div class="card" style="max-height:90vh;overflow:auto;text-align:left">
+  <h3 style="margin-top:0;color:#1e3a8a;">Area docente</h3>
+  <div id="pinbox"><input type="text" id="pin" placeholder="PIN docente"><button class="btn" id="pinok">Entra</button></div>
+  <div id="docbody" style="display:none">
+    <p style="color:#4b5563;">Incolla i codici di consegna degli studenti (uno per riga, copiati da Classroom):</p>
+    <textarea id="paste" placeholder="Un codice per riga"></textarea>
+    <button class="btn" id="dec">Aggiungi ai risultati</button> <button class="btn sec" id="clr">Svuota elenco</button>
+    <p id="decout" style="color:#4b5563;"></p>
+    <div class="tw" id="tab"></div>
+  </div>
+  <button class="link" id="docx">Chiudi</button>
+</div></div>
+
+<footer>
+    <p><strong>Area didattica</strong> · Tecnologia - 5ª SIA</p>
+    <p>Materiali per lo studio e l'apprendimento dell'informatica</p>
+</footer>
+
+<script>
+
+/* ===================== CONFIGURAZIONE (modificabile) ===================== */
+const TITOLO = "Verifica di Tecnologia - classe 5SIA - data: 27/10/2026";
+const DESCRIZIONE = "25 domande a risposta multipla. Una sola risposta corretta per domanda. Buon lavoro!";
+const PIN_DOCENTE = "1234";
+const DURATA_MINUTI = 90; // durata della verifica in minuti
+const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la verifica vera: false
+// Voto in decimi: [massimo di risposte corrette per quella fascia, voto]
+const VOTI = [[3,4],[7,4.5],[10,5],[11,5.5],[12,6],[14,6.5],[16,7],[18,7.5],[20,8],[23,8.5],[24,9],[25,10]];
+const DOMANDE = [
+ {"q": "La frase: «il livello applicazione è il browser»", "o": ["È corretta", "È sbagliata: il browser è nel livello applicazione", "È sbagliata: il browser è un’applicazione", "Nessuna delle precedenti"], "c": 2},
+ {"q": "Il livello applicazione nello stack TCP/IP si colloca:", "o": ["Al primo livello", "Al sesto livello", "Al secondo livello", "Nessuna delle precedenti"], "c": 3},
+ {"q": "Perché senza DNS non apri un sito anche se Internet funziona?", "o": ["Perché il livello applicazione non conosce l’IP del server", "Perché il DNS necessita di SMTP per funzionare", "Perché il DNS necessita di FTP per funzionare", "Perché il DNS non sa se viene usato HTTP o HTTPS"], "c": 0},
+ {"q": "Cosa fa davvero il livello di applicazione?", "o": ["Servizi alle App", "Semantica e servizi alle APP", "Semantica, Formato, Servizi alle App e regole di comunicazione", "Regole di comunicazione"], "c": 2},
+ {"q": "Su quale protocollo di livello trasporto si basa HTTP 1.1?", "o": ["IP", "UDP", "QUIC", "TCP"], "c": 3},
+ {"q": "Nel modello Client/Server...", "o": ["Il client è una macchina attiva ed il server una passiva", "Il server chiede una risorsa ed il client risponde alla richiesta", "Il client è un processo passivo ed il server uno attivo", "Il client chiede una risorsa ed il server risponde alla richiesta"], "c": 3},
+ {"q": "Nel modello Client/Server...", "o": ["Il server rimane in ascolto su porte logiche specifiche", "Il client rimane in ascolto su porte logiche specifiche", "Il client non interpreta JSON/HTML", "Il server avvia la comunicazione"], "c": 0},
+ {"q": "Nel modello architetturale «Two Tier»:", "o": ["Logica, dati e interfaccia utente sono nello stesso blocco", "La logica è separata dal blocco UI+DB", "Ogni modulo è separato", "Nessuna delle precedenti"], "c": 1},
+ {"q": "Nella tecnologia a microservizi...", "o": ["Client e server lavorano a turno scambiandosi i ruoli", "Per aggiornare un microservizio devo necessariamente modificare anche gli altri", "Ogni servizio può gestire diverse funzioni", "Nessuna delle precedenti"], "c": 0},
+ {"q": "Cos’è una API REST?", "o": ["Un microservizio", "Un’architettura che permette di far comunicare applicazioni diverse", "Uno dei livelli del modello ISO/OSI", "Nessuna delle precedenti"], "c": 1},
+ {"q": "Quale metodo HTTP uso se ho necessità di richiedere una risorsa?", "o": ["PUT", "DELETE", "POST", "GET"], "c": 3},
+ {"q": "Nel metodo POST...", "o": ["La lunghezza dei caratteri nel body è circa 2000 char", "L’upload dei file è impossibile", "I parametri sono visibili nell’URL", "I parametri non sono visibili nell’URL"], "c": 3},
+ {"q": "La struttura dell’URL è:", "o": ["Protocollo – host + path + parametri + risorsa", "Risorsa – protocollo – parametri – host", "Risorsa – host – parametri – protocollo", "Protocollo – host + path – risorsa + parametri"], "c": 3},
+ {"q": "Nell’API «GET /api/contatti?q=...&citta=Milano»", "o": ["La chiave del parametro è citta", "Il valore del parametro è città", "La chiave del parametro è api", "Il valore del parametro è contatti"], "c": 0},
+ {"q": "Il comando «ping»", "o": ["Consente di verificare la raggiungibilità di una destinazione", "Consente di riparare i possibili guasti", "Consente di verificare la risposta di un server", "Nessuna delle precedenti"], "c": 0},
+ {"q": "Il comando «netstat»", "o": ["Funziona da firewall", "Consente di vedere le porte aperte in ascolto", "Consente di analizzare i dati", "Nessuna delle precedenti"], "c": 1},
+ {"q": "Il comando «nslookup»:", "o": ["Serve a risolvere i nomi di dominio in indirizzi IP", "È un tool di scansione", "Ripara gli errori di DNS sul PC", "Nessuna delle precedenti"], "c": 0},
+ {"q": "Il comando «tracert»:", "o": ["Rivela l’IP di un server", "Garantisce una mappa esatta in tempo reale", "Misura la latenza su ogni nodo", "Nessuna delle precedenti"], "c": 2},
+ {"q": "Data la rete 192.168.0.0 si vuole determinare la subnet mask che consenta di avere almeno 20 IP disponibili. La subnet mask richiesta è:", "o": ["255.255.255.20", "255.255.255.240", "255.255.255.224", "Nessuna delle precedenti"], "c": 2},
+ {"q": "Dato l’indirizzo IP 192.168.1.5/24", "o": ["L’indirizzo è interno alla rete", "L’indirizzo è l’indirizzo di broadcast", "L’indirizzo è l’indirizzo di rete", "L’indirizzo è esterno alla rete"], "c": 0},
+ {"q": "Dato l’indirizzo IP 172.16.88.27/24, l’indirizzo di broadcast è:", "o": ["172.16.255.0", "172.16.88.255", "172.16.255.255", "172.255.255.255"], "c": 1},
+ {"q": "Dato l’indirizzo IP 172.16.88.27/24, l’indirizzo di rete è:", "o": ["172.16.255.0", "172.16.0.0", "172.0.0.0", "172.16.88.0"], "c": 3},
+ {"q": "A partire dall’indirizzo IP 172.16.0.0/16, voglio creare una prima subnet che contenga 254 IP utili e da questa un’altra subnet che contenga 6 IP utili. Le due reti sono:", "o": ["172.16.0.0/24 e 172.16.255.248/29", "172.16.0.0/24 e 172.16.0.248/29", "172.16.255.0/24 e 172.16.255.248/29", "Nessuna delle precedenti"], "c": 1},
+ {"q": "A partire dalla rete 192.168.0.0/30...", "o": ["Posso avere solo due IP utili", "Posso avere solo quattro IP utili", "Non ho IP utili", "La rete data non è ammissibile"], "c": 0},
+ {"q": "A partire dalla rete 172.16.0.0/28...", "o": ["Posso sempre creare 8 subnet ciascuna con un massimo di 30 IP utili", "È un indirizzo in classe B, ho a disposizione 65536 IP per cui posso creare 8 subnet ciascuna con un massimo di 30 IP utili", "Non posso creare nessun’altra subnet", "Rappresenta una rete con 14 IP utili"], "c": 3}
+];
+/* ========================================================================= */
+const $=id=>document.getElementById(id);
+const voto=p=>VOTI.find(([m])=>p<=m)[1],fmt=v=>String(v).replace(".",",");
+let cur=0,ans=Array(DOMANDE.length).fill(null),nome="",done=false;
+$("t").textContent=TITOLO;$("desc").textContent=DESCRIZIONE;document.title=TITOLO;
+$("dur").textContent="Durata: "+DURATA_MINUTI+" minuti. Il timer parte quando clicchi «Apri la verifica» e non si ferma.";
+if(MODALITA_TEST){$("tb").style.display="block";$("rst").style.display="";$("rst").onclick=()=>{try{localStorage.removeItem(KEY2)}catch(e){}location.reload()}}
+
+/* --- protezione anti copia --- */
+["copy","cut","contextmenu","dragstart","selectstart"].forEach(e=>document.addEventListener(e,ev=>{const t=ev.target.nodeType===1?ev.target:ev.target.parentElement;if(!(t&&t.closest("input,textarea,code")))ev.preventDefault()}));
+document.addEventListener("keydown",e=>{
+  if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&["c","x","a","p","s","u"].includes(k)||e.key==="F12"||e.key==="PrintScreen")e.preventDefault();
+});
+
+function render(){
+  const d=DOMANDE[cur];
+  $("qt").textContent=(cur+1)+". "+d.q;
+  $("opts").innerHTML="";
+  d.o.forEach((t,i)=>{
+    const el=document.createElement("div");el.className="opt"+(ans[cur]===i?" sel":"");
+    el.innerHTML='<span class="box">'+(ans[cur]===i?"✓":"")+'</span><span></span>';
+    el.lastChild.textContent=t;
+    el.onclick=()=>{if(done)return;ans[cur]=i;render()};
+    $("opts").appendChild(el);
+  });
+  $("side").innerHTML="";
+  DOMANDE.forEach((_,i)=>{const b=document.createElement("button");b.textContent="Domanda "+(i+1);if(i===cur)b.className="cur";b.onclick=()=>{cur=i;render()};$("side").appendChild(b)});
+  saveState();$("sq").innerHTML=ans.map(a=>'<i class="'+(a!==null?"done":"")+'"></i>').join("");
+  $("prog").textContent="Risposte: "+ans.filter(a=>a!==null).length+" / "+DOMANDE.length;
+}
+const KEY="verifica_consegnata_"+encodeURIComponent(TITOLO);
+const KEY2="verifica_incorso_"+encodeURIComponent(TITOLO);
+const DUR=DURATA_MINUTI*60000;let t0=0,tm=null;
+function saveState(){if(!t0||done)return;try{localStorage.setItem(KEY2,JSON.stringify({n:nome,s:t0,a:ans}))}catch(e){}}
+function tick(){
+  const left=Math.max(0,t0+DUR-Date.now()),s=Math.ceil(left/1000),p=n=>String(n).padStart(2,"0");
+  $("timer").textContent="⏱ "+p(Math.floor(s/3600))+":"+p(Math.floor(s%3600/60))+":"+p(s%60);
+  $("timer").style.color=left<300000?"#dc2626":"";
+  if(left<=0)consegna(true);
+}
+function begin(){
+  $("home").style.display="none";$("quiz").classList.add("on");$("who").textContent=nome;render();
+  tick();if(!done)tm=setInterval(tick,1000);
+}
+function getDone(){if(MODALITA_TEST)return null;try{return localStorage.getItem(KEY)}catch(e){return null}}
+function showDup(c){$("code2").textContent=c;$("dup").classList.add("on")}
+$("start").onclick=()=>{
+  const g=getDone();if(g){showDup(g);return}
+  nome=$("nome").value.trim();
+  if(nome.length<3){alert("Inserisci nome e cognome.");return}
+  t0=Date.now();begin();
+};
+$("submit").onclick=()=>{
+  const miss=ans.filter(a=>a===null).length;
+  $("cmsg").textContent=miss?("Hai "+miss+" domande senza risposta. Consegnare comunque?"):"Vuoi consegnare la verifica?";
+  $("confirm").classList.add("on");
+};
+$("cno").onclick=()=>$("confirm").classList.remove("on");
+function consegna(auto){
+  $("confirm").classList.remove("on");if(done)return;done=true;clearInterval(tm);$("submit").disabled=true;
+  try{localStorage.removeItem(KEY2)}catch(e){}
+  const punti=ans.reduce((s,a,i)=>s+(a===DOMANDE[i].c?1:0),0);
+  $("score").textContent="Voto: "+fmt(voto(punti))+" / 10";
+  const payload={n:nome,p:punti,t:DOMANDE.length,a:ans.map(a=>a===null?"-":a).join(""),d:new Date(Math.min(Date.now(),t0+DUR)).toISOString()};
+  const cod=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  $("code").textContent=cod;if(!MODALITA_TEST){try{localStorage.setItem(KEY,cod)}catch(e){}}
+  $("saved").textContent="Hai realizzato "+punti+" punti su "+DOMANDE.length+" (una risposta corretta = 1 punto).";
+  $("res").classList.add("on");
+  $("saved").textContent+=" Copia il codice qui sotto e incollalo come consegna su Classroom.";
+  if(auto)$("saved").textContent="Tempo scaduto: la verifica è stata consegnata automaticamente. "+$("saved").textContent;
+}
+$("cyes").onclick=()=>consegna(false);
+/* --- area docente --- */
+$("docBtn").onclick=()=>$("doc").classList.add("on");
+$("docx").onclick=()=>$("doc").classList.remove("on");
+$("pinok").onclick=async()=>{
+  if($("pin").value!==PIN_DOCENTE){alert("PIN errato");return}
+  $("pinbox").style.display="none";$("docbody").style.display="block";table();
+};
+const RKEY="verifica_risultati_"+encodeURIComponent(TITOLO);
+const dec=c=>JSON.parse(decodeURIComponent(escape(atob(c))));
+function loadR(){try{return JSON.parse(localStorage.getItem(RKEY)||"[]")}catch(e){return[]}}
+function saveR(l){try{localStorage.setItem(RKEY,JSON.stringify(l))}catch(e){}}
+function table(){
+  const rows=loadR().map(c=>{try{return dec(c)}catch(e){return null}}).filter(Boolean).sort((a,b)=>a.n.localeCompare(b.n));
+  if(!rows.length){$("tab").textContent="Nessun risultato inserito.";return}
+  const t=document.createElement("table");
+  t.innerHTML="<tr><th>Studente</th><th>Punti</th><th>Voto</th><th>Data</th>"+DOMANDE.map((_,i)=>"<th>D"+(i+1)+"</th>").join("")+"</tr>";
+  rows.forEach(r=>{
+    const tr=t.insertRow();let p=0;
+    const cells=DOMANDE.map((d,i)=>{const a=r.a[i];if(a===undefined||a==="-")return["–",""];if(+a===d.c){p++;return["✓","ok"]}return["✗","ko"]});
+    [r.n,p+"/"+DOMANDE.length,fmt(voto(p))+"/10",new Date(r.d).toLocaleString("it-IT")].forEach(v=>tr.insertCell().textContent=v);
+    cells.forEach(([s,k])=>{const td=tr.insertCell();td.textContent=s;td.className=k});
+  });
+  $("tab").innerHTML="";$("tab").appendChild(t);
+}
+$("dec").onclick=()=>{
+  const l=loadR();let bad=0,add=0;
+  $("paste").value.split(/\s+/).filter(Boolean).forEach(c=>{try{dec(c);if(!l.includes(c)){l.push(c);add++}}catch(e){bad++}});
+  saveR(l);$("paste").value="";$("decout").textContent=add+" aggiunti"+(bad?", "+bad+" non validi":"")+".";table();
+};
+$("clr").onclick=()=>{if(confirm("Svuotare l'elenco?")){saveR([]);table()}};
+function copyText(t,b){
+  const o=b.textContent,ok=()=>{b.textContent="Copiato ✓";setTimeout(()=>b.textContent=o,1800)};
+  const fb=()=>{const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");ok()}catch(e){}x.remove()};
+  navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb();
+}
+$("copy").onclick=e=>copyText($("code").textContent,e.target);
+$("copy2").onclick=e=>copyText($("code2").textContent,e.target);
+$("exit").onclick=()=>{if(MODALITA_TEST){location.reload();return}$("res").classList.remove("on");$("quiz").classList.remove("on");$("home").style.display="";$("nome").value=""};
+$("dupok").onclick=()=>$("dup").classList.remove("on");
+if(getDone())showDup(getDone());
+else{try{const st=JSON.parse(localStorage.getItem(KEY2)||"null");if(st){nome=st.n;t0=st.s;ans=st.a;begin()}}catch(e){}}
+
+</script>
+</body>
+</html>
