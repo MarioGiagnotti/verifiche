@@ -112,7 +112,7 @@ const DESCRIZIONE = "25 domande a risposta multipla. Una sola risposta corretta 
 const PIN_DOCENTE = "1234";
 const ID_VERIFICA = "SR-2026-10-3sia-ott"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
 const DURATA_MINUTI = 90; // durata della verifica in minuti
-const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la verifica vera: false
+const MODALITA_TEST = false; // true = si può ripetere più volte (test). Per la verifica vera: false
 // PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
 // Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
 // VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
@@ -120,7 +120,7 @@ const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la
 const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[50,6],[55,6.5],[65,7],[70,7.5],[75,8],[80,8.5],[95,9],[100,10]];
 const DOMANDE = [
  {"q": "il modello IPO sta per", "o": ["Input-prova-output", "Input-process-outsource", "Ingresso-prova-output", "Input-process-output"], "c": 3,"p":3},
- {"q": "Esempi di input sono: ", "o": ["tastiera,sensori", "Istruzioni,algoritmi", "monitor,mouse", "tastiera,mouse"], "c": 0,"p":3},
+ {"q": "Esempi di input sono: ", "o": ["tastiera,sensori", "Istruzioni,algoritmi", "monitor,mouse", "tastiera,monitor"], "c": 0,"p":3},
  {"q": "Le componenti fondamentali di un sistema di elaborazione sono:", "o": ["Memoria, scheda video, I/O", "Memoria, Scheda madre, CPU", "Memoria, Cache, Scheda madre", "Memoria, I/O, CPU"], "c": 3,"p":3},
  {"q": "Quale affermazione è corretta?", "o": ["Il Bus coordina tutto", "L'I/O comunica", "La CPU memorizza", "La memoria collega tutto"], "c": 1,"p":3},
  {"q": "Esempi di hardware sono: ", "o": ["CPU, Hardware e driver", "RAM, scheda madre, firmware", "CPU, RAM, Scheda di rete", "Scheda video, alimentatore e sistema operativo"], "c": 2,"p":3},
@@ -132,9 +132,9 @@ const DOMANDE = [
  {"q": "Nei sistemi di elaborazione reali il bus è: ", "o": ["cpu, controllo e dati", "idirizzi, controllo e memoria", "condiviso", "idirizzi, controllo e dati"], "c": 3,"p":3},
  {"q": "All'interno della CPU sono previsti: ", "o": ["CU, ALU, Clock, I/O", "CU, ALU, Clock, registri", "registri, ALU, Clock, I/O", "CU, ALU, registri, I/O"], "c": 1,"p":3},
  {"q": "Quale elemento determina la frequenza di lavoro di un processore? ", "o": ["Bus", "ALU", "clock", "registri"], "c": 2,"p":3},
- {"q": "L'MAR..", "o": ["Interviene sempre nel ciclo macchina", "non interviene nel ciclo macchina", "Interviene nella fase di fetch", "Interviene nella fase di WB"], "c": 3,"p":3}, 
- {"q": "L'IR contiene", "o": ["L'indirizzo della successiva istruzione", "L'istruzione corrente'", "L'indirizzo dell'istruzione corrente", "L'istruzione successiva"], "c": 1,"p":3}, 
- {"q": "Il PC contiene: ", "o": ["L'indirizzo della successiva istruzione", "L'istruzione corrente'", "L'indirizzo dell'istruzione corrente", "L'istruzione successiva"], "c": 0,"p":3},
+ {"q": "L'MAR..", "o": ["Interviene sempre nel ciclo macchina", "non interviene nel ciclo macchina", "Interviene solo nella fase di fetch", "Interviene solo nella fase di WB"], "c": 0,"p":3}, 
+ {"q": "L'IR contiene", "o": ["L'indirizzo della successiva istruzione", "L'istruzione corrente", "L'indirizzo dell'istruzione corrente", "L'istruzione successiva"], "c": 1,"p":3}, 
+ {"q": "Il PC contiene: ", "o": ["L'indirizzo della successiva istruzione", "L'istruzione corrente", "L'indirizzo dell'istruzione corrente", "L'istruzione successiva"], "c": 0,"p":3},
  {"q": "Il ciclo macchina è costituito da: ", "o": ["3 fasi", "4 fasi", "5 fasi", "3, 4 o 5 fasi"], "c": 3,"p":3},
  {"q": "Qual è l'ordine corretto nella fase di fetch? 1.PC fornisce indirizzo prossima istruzione, 2.Memoria mette istruzione su bus dati → MDR, 3. MDR → IR (ora CPU ha istruzione), 4. PC viene incrementato (PC = PC + dimensione istruzione) per puntare alla successiva, salvo salti, 5. Indirizzo → MAR → bus indirizzi → memoria", "o": ["1-2-3-4-5", "1-5-2-3-4", "2-5-1-4-3", "3-4-5-1-2"], "c": 1,"p":5},
  {"q": "In quali circostaze le pipeline sono in condizioni di hazard?", "o": ["Quando nel programma ci sono istruzioni while", "Quando nel programma ci sono istruzioni if-else", "Quando nel programma ci sono istruzioni jump", "Quando nel programma ci sono istruzioni for"], "c": 2,"p":5},
