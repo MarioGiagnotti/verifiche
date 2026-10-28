@@ -109,6 +109,45 @@ table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{p
 
 <script>
 /* ===================== CONFIGURAZIONE (modificabile) ===================== */
+const TITOLO = "Verifica di Sistemi e Reti - classe 4SIA - data: 26-10-2026";
+const DESCRIZIONE = "25 domande a risposta multipla. Una sola risposta corretta per domanda. Buon lavoro!";
+const PIN_DOCENTE = "1234";
+const ID_VERIFICA = "SR-2026-10-first"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
+const DURATA_MINUTI = 90; // durata della verifica in minuti
+const MODALITA_TEST = false; // true = si può ripetere più volte (test). Per la verifica vera: false
+// PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
+// Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
+// VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
+// (Questa tabella equivale alla precedente per 25 domande: 3 corrette = 12%, 7 = 28%, 10 = 40%, ...)
+const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[50,6],[55,6.5],[65,7],[70,7.5],[75,8],[80,8.5],[95,9],[100,10]];
+const DOMANDE = [
+ {"q": "Dove si colloca il livello Data Link nel modello ISO/OSI?", "o": ["Primo livello", "Terzo livello", "Ultimo livello", "Secondo livello"], "c": 3,"p":20,"p":3},
+ {"q": "Di cosa si occupa il livello Data Link?", "o": ["Del trasferimento dati da un nodo A a un nodo B adiacenti", "Del trasferimento dati da un nodo A a un nodo B interconnessi da un router", "Del trasferimento dati da un nodo A a un nodo B in una rete complessa", "Di instradare i pacchetti tra reti diverse"], "c": 0,"p":3},
+ {"q": "In fase di trasmissione il livello Data Link...", "o": ["Riconosce i confini del frame (framing) e verifica l’integrità con FCS", "Rimuove header e trailer, estrae il payload", "Consegna il pacchetto al livello Network", "Consegna il frame al livello fisico per la trasmissione sul mezzo"], "c": 3,"p":3},
+ {"q": "Quali sono le tre funzioni principali del livello Data Link?", "o": ["Delimitare il frame, Controllare il flusso, Instradare il pacchetto", "Delimitare il frame, Controllare il flusso, Rilevare gli errori", "Controllare il flusso, Rilevare gli errori, trasformare il segnale", "Rilevare gli errori, trasformare il segnale, delimitare il frame"], "c": 1,"p":3},
+ {"q": "Qual è la generica struttura del frame?", "o": ["Header, Payload, IP", "IP, Header, Protocollo", "Header, Payload, Trailer", "Nessuna delle precedenti"], "c": 2,"p":3},
+ {"q": "Da quanti byte è costituito il MAC Address?", "o": ["6", "8", "2", "5"], "c": 0,"p":3},
+ {"q": "Da quanti byte è costituito l'Header?", "o": ["4", "1", "2", "6"], "c": 2,"p":3},
+ {"q": "Da quanti byte è costituito il Payload Ethernet?", "o": ["20-1500", "46-1500", "46-2000", "20-2000"], "c": 1,"p":3},
+ {"q": "Da quanti byte è costituito l'FCS?", "o": ["4", "8", "12", "16"], "c": 0,"p":3},
+ {"q": "Nel modello ISO/OSI qual è l'ordine corretto in sequenza dei livelli?", "o": ["Data Linkt, Trasporto, Network", "Network, Fisico, Applicazione", "Network, Trasporto, Sessione", "Trasporto, Sessione, Applicazione"], "c": 2,"p":3},
+ {"q": "Cosa si intende per framing?", "o": ["Aggiungere l'header", "Eliminare l'header", "Estrarre trame corrette dal flusso di bit", "Raggruppare header e payload"], "c": 3,"p":3},
+ {"q": "Il Character Stuffing è orientato al", "o": ["bit", "byte", "kbyte", "Mbyte"], "c": 1,"p":3},
+ {"q": "Nel bit stuffing dopo quanti 1 consecutivi viene inserito uno 0?", "o": ["7", "6", "5", "4"], "c": 2,"p":3},
+ {"q": "Quale affermazione è corretta?", "o": ["Il bit di parità è utilizzato per correggere errori su brevi distanze", "Il CRC si calcola con modulo 256", "Il Checksum condivide un polinomio generatore", "nessuna delle precedenti"], "c": 3,"p":3}, 
+ {"q": "Quale affermazione è corretta?:", "o": ["Il CRC rileva e corregge errori", "Il bit di parità rileva un numero dispari di errori", "Il Checksum corregge gli errori", "Nessuna delle precedenti"], "c": 1,"p":3}, 
+ {"q": "Qual è il comportamento dell'hub'?", "o": ["Inoltra il segnale ricevuto alla porta corretta", "Non inoltra segnali", "Controlla il MAC Address del destinatario e poi inoltra il segnale ricevuto", "Inoltra il segnale ricevuto a tutte le porte"], "c": 4,"p":4},
+ {"q": "Qual è il comportamento del repeater?", "o": ["Determina l'IP del destinatario e inoltra il messaggio", "Determina il MAC Address del sorgente e restituisce il messaggio", "Trasforma i segnali analogici in digitali", "Inoltra il segnale ricevuto a tutte le porte"], "c": 3,"p":4},
+ {"q": "Qual è il comportamento dello switch?:", "o": ["Inoltra il segnale ricevuto alla porta corretta", "Determina l'IP del destinatario e inoltra il messaggio", "Determina il MAC Address del sorgente e restituisce il messaggio", "Inoltra il segnale ricevuto a tutte le porte"], "c": 0,"p":5},
+ {"q": "Ipotizzando che la sequenza da trasmettere sia 111001001 con bit di parità dispari, cosa viene effettivamente trasmesso?", "o": ["111001001", "111001000", "1110010010", "1110010011"], "c": 2,"p":6},
+ {"q": "Se il destinatario riceve la sequenza 110010010010 e fa un check con bit di parità pari può concludere che..", "o": ["Sicuramente c'è stato un errore", "Probabilmente c'è stato un errore", "Sicuramente non ci sono stati errori", "Probabilmente non ci sono stati errori"], "c": 0,"p":6},
+ {"q": "Con bit di parità pari e con sequenza di trasmissione 01010101 cosa verrà effettivamente trasmesso?", "o": ["01010101", "010101010", "101010101", "001010101"], "c": 1,"p":6},
+ {"q": "Si vuole trasmettere il messaggio esadecimale B1C7D9 con Checksum modulo 256. Cosa verrà trasmesso effettivamente?", "o": ["B1C7D9", "B1C7D951", "B1C7D9AF", "B1C7D95181"], "c": 2,"p":6},
+ {"q": "Il destinatario riceve il messaggio A8B7A1 con Checksum modulo 256. Cosa può concludere?", "o": ["Probabilmente non ci sono stati errori in fase di trasmissione", "Probabilmente ci sono stati errori in fase di trasmissione", "Sicuramente non ci sono stati errori in fase di trasmissione", "Sicuramente ci sono stati errori in fase di trasmissione"], "c": 0,"p":6},
+ {"q": "Dato il polinomio generatore P:x^4 + x^2 + 1 e il messaggio M:110001110 il CRC è:", "o": ["0001", "0011", "0010", "1010"], "c": 2,"p":6},
+ {"q": "Il destinatario riceve 11000111010011 ed il polinomio generatore è P:x^4 + x + 1:", "o": ["Ci sono stati errori", "C'è stato un solo errore", "Probabilmente non ci sono stati errori", "Nessuna delle precedenti"], "c": 2,"p":6}
+];
+/* ========================================================================= */
 const $=id=>document.getElementById(id);
 const fmt=v=>String(v).replace(".",",");
 const AVV=[];
@@ -256,3 +295,4 @@ else{try{const st=JSON.parse(localStorage.getItem(KEY2)||"null");if(st){nome=st.
 </script>
 </body>
 </html>
+

@@ -109,6 +109,45 @@ table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{p
 
 <script>
 /* ===================== CONFIGURAZIONE (modificabile) ===================== */
+const TITOLO = "Verifica di Tecnologia - classe 5SIA - 27-10-2026";
+const DESCRIZIONE = "25 domande a risposta multipla. Una sola risposta corretta per domanda. Buon lavoro!";
+const PIN_DOCENTE = "1234";
+const ID_VERIFICA = "TE-2026-10-27"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
+const DURATA_MINUTI = 90; // durata della verifica in minuti
+const MODALITA_TEST = false; // true = si può ripetere più volte (test). Per la verifica vera: false
+// PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
+// Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
+// VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
+// (Questa tabella equivale alla precedente per 25 domande: 3 corrette = 12%, 7 = 28%, 10 = 40%, ...)
+const VOTI = [[12,4],[28,4.5],[40,5],[44,5.5],[48,6],[56,6.5],[64,7],[72,7.5],[80,8],[92,8.5],[96,9],[100,10]];
+const DOMANDE = [
+ {"q": "L'architettura a terminali remoti è caratterizzata da:", "o": ["le entità software sono componenti autonomi", "le entità del sistema sono paritetiche", "i client sono entità attive", "terminali omogenei e con funzionalità limitate"], "c": 3},
+ {"q": "L'architettura client/server è caratterizzata da:", "o": ["i client acquisiscono capacità di elaborazione locale", "distribuzione efficace dei carichi di lavoro", "sono capaci sia di offrire sia di richiedere servizi", "elaborazione completamente centralizzata"], "c": 0},
+ {"q": "Nelle architetture Web Centric:", "o": ["Il server è un unico mainframe", "Il server è specializzato", "Il server è un componente peer", "Il server offre servizi Web e ha funzioni di DB"], "c": 3},
+ {"q": "Nelle architetture cooperative:", "o": ["Il client è passivo", "il server è il browser", "il server è un unico mainframe", "Il server è un componente peer"], "c": 1},
+ {"q": "Nelle architetture completamente distribuite:", "o": ["Il client è passivo", "Il server è attivo", "Client e server sono peer", "Nessuna delle precedenti"], "c": 2},
+ {"q": "Nelle architetture Client server:", "o": ["Il client è tipicamente un browser", "Il server è tipicamente un browser", "Il server costruisce una richiesta HTTP", "Nessuna delle precedenti"], "c": 0},
+ {"q": "Nelle architetture Client server:", "o": ["Il server svolge un ruolo attivo", "Il client risponde alle richieste", "Il server resta in ascolto su una porta logica", "Nessuna delle precedenti"], "c": 2},
+ {"q": "HTTP è l'acronimo di:", "o": ["HyperText Transfer Payload", "HyperText Transfer Protocol", "HyperTexture Transfer Protocol", "Nessuna delle precedenti"], "c": 1},
+ {"q": "Nelle connessione HTTP persistenti:", "o": ["La velocità è elevata", "La velocità è bassa", "L'overhead è alto", "Per 3 risorse->3 connessioni"], "c": 0},
+ {"q": "Nelle connessione HTTP non persistenti:", "o": ["L'overhead è basso", "La velocità è elevata", "Per 3 risorse->3 connessioni", "Nessuna delle precedenti"], "c": 2},
+ {"q": "In una richiesta HTTP:", "o": ["La prima riga inizia con il protocollo", "La prima riga inizia con la risorsa richiesta", "La prima riga inizia con il tipo di contenuto", "La prima riga inizia con il metodo"], "c": 3},
+ {"q": "Gli header HTTP:", "o": ["Contengono informazioni collegate al tipo di richiesta", "Sono coppie chiave:valore", "Contengono il metodo utilizzato", "nessuna delle precedenti"], "c": 1},
+ {"q": "In una risposta HTTP:", "o": ["La prima riga inizia con il metodo", "La prima riga inizia con gli header", "La prima riga inizia con il protocollo", "La prima riga inizia con il codice di stato"], "c": 2},
+ {"q": "Il Metodo GET", "o": ["necessita del body", "necessita del codice di stato", "necessita dei parametri", "non necessita del body"], "c": 3},
+ {"q": "Per aggiornare una risorsa sul server uso: ", "o": ["GET", "POST", "PUT", "DELETE"], "c": 2},
+ {"q": "Per un form di login uso:", "o": ["POST", "PUT", "GET", "DELETE"], "c": 0},
+ {"q": "Per eliminare una risorsa uso:", "o": ["POST", "DELETE", "GET", "PUT"], "c": 1},
+ {"q": "I codici di stato 3xx:", "o": ["Indicano errori del client", "Indicano errori del server", "Indicano reindirizzamenti", "Indicano che la richiesta è andata a buon fine"], "c": 2},
+ {"q": "Cos'è una Web Application?", "o": ["Una applicazione ospitata sul server", "Una applicazione ospitata sul client", "Una applicazione che richiede installazione locale", "Nessuna delle precedenti"], "c": 0},
+ {"q": "Esempi di tecnologie Client side per le Web App sono:", "o": ["Python,HTML", "JAVA,HTML", "JS,PHP", "HTML,CSS"], "c": 3},
+ {"q": "Esempi di tecnologie Server side per le Web App sono:", "o": ["HTML,CSS", "Python, HTML", "PHP,CSS", "PHP, ASP.NET"], "c": 3},
+ {"q": "Le architetture N-TIER:", "o": ["Migliorano modularità e scalabilità", "Distinguono in tre livelli", "Migliorano modularità ma non scalabilità", "Migliorano scalabilità ma non modularità"], "c": 0},
+ {"q": "Un socket è:", "o": ["Una coppia porta logica-IP", "Una coppia IP - protocollo", "una coppia IP-Porta logica", "Una coppia TCP-IP"], "c": 2},
+ {"q": "Nei Web Services l'architettura più utilizzata è:", "o": ["SOAP", "SOA", "REST", "Nessuna delle precedenti"], "c": 2},
+ {"q": "In una operazione di creazione di una risorsa quale dei seguenti comandi è errato? :", "o": ["POST /prodotto=123", "GET /crea?prodotto=123", "POST /locale/prodotto=123", "nessuna delle precedenti"], "c": 1}
+];
+/* ========================================================================= */
 const $=id=>document.getElementById(id);
 const fmt=v=>String(v).replace(".",",");
 const AVV=[];
@@ -256,4 +295,3 @@ else{try{const st=JSON.parse(localStorage.getItem(KEY2)||"null");if(st){nome=st.
 </script>
 </body>
 </html>
-
