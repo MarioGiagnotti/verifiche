@@ -44,7 +44,7 @@ input[type=text]{width:100%;padding:11px;border:1px solid var(--bd);border-radiu
 .big{font-size:44px;font-weight:700;color:var(--pri);margin:8px 0}
 code{display:block;word-break:break-all;background:var(--bg);padding:10px;border-radius:8px;font-size:12px;-webkit-user-select:text;user-select:text;margin:8px 0}
 table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{padding:6px;border-bottom:1px solid var(--bd)}
-#doc .card{max-width:980px}.tw{overflow-x:auto}.ok{color:var(--tx);font-weight:700}.ko{color:#dc2626;font-weight:700}textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;margin:8px 0;-webkit-user-select:text;user-select:text}
+#doc .card{max-width:980px}.tw{overflow-x:auto}.ok{color:var(--ok);font-weight:700}.ko{color:#dc2626;font-weight:700}textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;margin:8px 0;-webkit-user-select:text;user-select:text}
 @media (max-width:640px){.side{width:96px;padding:8px}.side button{font-size:12px;padding:8px 6px}.center{padding:16px}}
 </style>
 </head>
@@ -109,10 +109,10 @@ table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{p
 
 <script>
 /* ===================== CONFIGURAZIONE (modificabile) ===================== */
-const TITOLO = "Verifica di Sistemi e Reti - classe 3SIA - data: 27-10-2026";
+const TITOLO = "Verifica di Sistemi e Reti - classe 3SIA - data: 26/10/2026";
 const DESCRIZIONE = "25 domande a risposta multipla. Una sola risposta corretta per domanda. Buon lavoro!";
 const PIN_DOCENTE = "1234";
-const ID_VERIFICA = "SR-2026-10-3sia-ott"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
+const ID_VERIFICA = "SR-2026-01-3sia"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
 const DURATA_MINUTI = 90; // durata della verifica in minuti
 const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la verifica vera: false
 // PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
@@ -261,14 +261,16 @@ function dettaglio(r){
   box.appendChild(t);box.scrollIntoView({block:"nearest"});
 }
 function table(){
+  $("det").innerHTML="";
   const rows=loadR().map(c=>{try{return dec(c)}catch(e){return null}}).filter(Boolean).sort((a,b)=>a.n.localeCompare(b.n));
   if(!rows.length){$("tab").textContent="Nessun risultato inserito.";return}
   const t=document.createElement("table");
   t.innerHTML="<tr><th>Studente</th><th>Corrette (punteggio)</th><th>Voto</th><th>Data</th>"+DOMANDE.map((_,i)=>"<th>D"+(i+1)+"</th>").join("")+"</tr>";
   rows.forEach(r=>{
     const tr=t.insertRow();let p=0,w=0;
-    const cells=DOMANDE.map((d,i)=>{const a=r.a[i];if(a===undefined||a==="-")return["–",""];if(+a===d.c){p++;w+=PESI[i];return["✓","ok"]}return["✗","ko"]});
+    const cells=DOMANDE.map((d,i)=>{const a=r.a[i];if(a===undefined||a==="-")return["–",""];if(+a===d.c){p++;w+=PESI[i];return[String.fromCharCode(65+ +a),"ok"]}return[String.fromCharCode(65+ +a),"ko"]});
     [r.n,p+"/"+DOMANDE.length+" ("+fmt(Math.round(w*100)/100)+"%)",fmt(voto(Math.round(w*100)/100))+"/10",new Date(r.d).toLocaleString("it-IT")].forEach(v=>tr.insertCell().textContent=v);
+    tr.cells[0].style.cssText="cursor:pointer;text-decoration:underline";tr.cells[0].onclick=()=>dettaglio(r);
     cells.forEach(([s,k])=>{const td=tr.insertCell();td.textContent=s;td.className=k});
   });
   $("tab").innerHTML="";$("tab").appendChild(t);
