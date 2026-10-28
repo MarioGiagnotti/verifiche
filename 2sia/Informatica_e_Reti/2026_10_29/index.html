@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verifica</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1d2433;--mut:#6b7488;--pri:#2f5bea;--ok:#16a34a;--bd:#d9deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1b2030;--tx:#e8ecf5;--mut:#98a2b8;--pri:#6f93ff;--ok:#34d27b;--bd:#2c3348}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1b2030;--tx:#e8ecf5;--mut:#98a2b8;--pri:#6f93ff;--ok:#34d27b;--bd:#2c3348}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.protect,.protect *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.protect img{pointer-events:none}
+@media print{body{display:none!important}}
+.wrap{max-width:560px;margin:8vh auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:24px}
+h1{margin:0 0 6px;font-size:24px}p{color:var(--mut);line-height:1.5}
+input[type=text]{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:16px;margin:8px 0 16px;-webkit-user-select:text;user-select:text}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:12px 20px;font-size:16px;cursor:pointer;font-weight:600}
+.btn.sec{background:transparent;color:var(--pri);border:1px solid var(--pri)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:18px;font-size:13px;text-decoration:underline}
+#quiz{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#quiz.on{display:flex}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--bd);background:var(--card)}
+.main{flex:1;display:flex;min-height:0}
+.side{width:170px;border-right:1px solid var(--bd);background:var(--card);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.side button{padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);cursor:pointer;text-align:left;font-size:14px}
+.side button.cur{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri) inset;font-weight:600}
+.center{flex:1;padding:28px;overflow-y:auto}
+.q{font-size:20px;font-weight:600;margin-bottom:20px;line-height:1.4}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--bd);border-radius:10px;background:var(--card);margin-bottom:10px;cursor:pointer;font-size:16px}
+.opt.sel{border-color:var(--pri)}
+.box{width:22px;height:22px;border:2px solid var(--mut);border-radius:5px;flex:none;display:grid;place-items:center;color:#fff;font-size:14px}
+.opt.sel .box{background:var(--pri);border-color:var(--pri)}
+.bottom{display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid var(--bd);background:var(--card)}
+.sq{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+.sq i{width:26px;height:26px;border-radius:6px;background:var(--bd);display:block}
+.sq i.done{background:var(--ok)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;padding:16px;z-index:9}
+.modal.on{display:grid}
+.modal .card{max-width:440px;width:100%;text-align:center}
+.big{font-size:44px;font-weight:700;color:var(--pri);margin:8px 0}
+code{display:block;word-break:break-all;background:var(--bg);padding:10px;border-radius:8px;font-size:12px;-webkit-user-select:text;user-select:text;margin:8px 0}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{padding:6px;border-bottom:1px solid var(--bd)}
+#doc .card{max-width:980px}.tw{overflow-x:auto}.ok{color:var(--tx);font-weight:700}.ko{color:#dc2626;font-weight:700}textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;margin:8px 0;-webkit-user-select:text;user-select:text}
+@media (max-width:640px){.side{width:96px;padding:8px}.side button{font-size:12px;padding:8px 6px}.center{padding:16px}}
+</style>
+</head>
+<body class="protect">
+<div class="wrap" id="home">
+  <div class="card">
+    <div id="tb" style="display:none;background:#fde68a;color:#78350f;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13px">MODALITÀ TEST attiva: la verifica si può ripetere. Prima di darla agli studenti imposta MODALITA_TEST = false.</div>
+    <h1 id="t">Verifica</h1>
+    <p id="desc"></p>
+    <p id="dur" style="margin-top:-8px"></p>
+    <label for="nome">Nome e cognome</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Es. Mario Rossi">
+    <button class="btn" id="start">Apri la verifica</button><br>
+    <button class="link" id="docBtn">Area docente</button>
+  </div>
+</div>
+<div id="quiz">
+  <div class="top"><strong id="who"></strong><strong id="timer" style="font-size:20px;font-variant-numeric:tabular-nums"></strong><span id="prog" style="color:var(--mut)"></span><button class="btn sec" id="rst" style="display:none;padding:6px 10px;font-size:13px">↺ Test</button></div>
+  <div class="main">
+    <div class="side" id="side"></div>
+    <div class="center"><div class="q" id="qt"></div><div id="opts"></div></div>
+  </div>
+  <div class="bottom"><div class="sq" id="sq"></div><button class="btn" id="submit">Consegna</button></div>
+</div>
+<div class="modal" id="res"><div class="card">
+  <h2 style="margin:0">Verifica consegnata</h2>
+  <div class="big" id="score"></div>
+  <p id="saved"></p>
+  <p style="margin-bottom:0;font-size:13px">Codice di consegna (conservalo):</p><code id="code"></code>
+  <button class="btn sec" id="copy">Copia codice</button> <button class="btn" id="exit">Esci</button>
+</div></div>
+<div class="modal" id="dup"><div class="card">
+  <h2 style="margin:0 0 8px">Verifica già eseguita</h2>
+  <p>Hai già consegnato questa verifica da questo dispositivo. Non è possibile ripeterla.</p>
+  <p style="margin-bottom:0;font-size:13px">Il tuo codice di consegna:</p><code id="code2"></code>
+  <button class="btn sec" id="copy2">Copia codice</button> <button class="btn" id="dupok">Chiudi</button>
+</div></div>
+<div class="modal" id="confirm"><div class="card">
+  <h3 id="cmsg" style="margin-top:0"></h3>
+  <button class="btn sec" id="cno">Torna alla verifica</button> <button class="btn" id="cyes">Consegna</button>
+</div></div>
+<div class="modal" id="doc"><div class="card" style="max-height:90vh;overflow:auto;text-align:left">
+  <h3 style="margin-top:0">Area docente</h3>
+  <div id="pinbox"><input type="text" id="pin" placeholder="PIN docente"><button class="btn" id="pinok">Entra</button></div>
+  <div id="docbody" style="display:none">
+    <p>Incolla i codici di consegna degli studenti (uno per riga, copiati da Classroom):</p>
+    <textarea id="paste" placeholder="Un codice per riga"></textarea>
+    <button class="btn" id="dec">Aggiungi ai risultati</button> <button class="btn sec" id="clr">Svuota elenco</button>
+    <p id="decout"></p>
+    <p style="font-size:13px;color:var(--mut)">Nelle colonne D1, D2… la lettera è la risposta data (verde = corretta, rossa = errata, – = nessuna risposta). Clicca sul nome di uno studente per vedere il dettaglio domanda per domanda.</p>
+    <div class="tw" id="tab"></div>
+    <div id="det" style="margin-top:14px"></div>
+  </div>
+  <button class="link" id="docx">Chiudi</button>
+</div></div>
+<script>
+/* ===================== CONFIGURAZIONE (modificabile) ===================== */
+const TITOLO = "Verifica INFOReti A1 M1 L1-L3 - Computer, Software, Dati - 28/10/2026";
+const DESCRIZIONE = "25 domande a risposta multipla";
+const PIN_DOCENTE = "1234";
+const ID_VERIFICA = "INFOReti-A1-M1-L1-L3-2026-10-29"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
+const DURATA_MINUTI = 45; // durata della verifica in minuti
+const MODALITA_TEST = true; // true = si può ripetere più volte (test). Per la verifica vera: false
+// PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
+// Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
+// VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
+// (Questa tabella equivale alla precedente per 25 domande: 3 corrette = 12%, 7 = 28%, 10 = 40%, ...)
+const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[50,6],[55,6.5],[65,7],[70,7.5],[75,8],[80,8.5],[95,9],[100,10]];
+const DOMANDE = [
+ {"q": "Chi ha coniato il termine 'informatica' e in che anno?", "o": ["Philippe Dreyfus nel 1962", "Alan Turing nel 1936", "John von Neumann nel 1945", "Blaise Pascal nel 1642"], "c": 0,"p":4},
+ {"q": "Qual e' la definizione formale di informatica data nella lezione?", "o": ["La scienza che studia solo l'hardware dei computer", "La scienza che studia la rappresentazione, elaborazione e trasmissione automatica dell'informazione tramite sistemi elettronici", "L'insieme dei cavi e delle reti aziendali", "La disciplina che ripara i computer"], "c": 1,"p":4},
+ {"q": "Perche' i computer usano segnali digitali binari 0/1 invece di segnali analogici?", "o": ["Perche' sono piu' moderni ed eleganti", "Perche' occupano meno spazio fisico", "Perche' 0 e 1 sono facili da distinguere anche con rumore elettrico, sono affidabili e correggibili", "Perche' consumano meno elettricita'"], "c": 2,"p":4},
+ {"q": "Qual e' la differenza corretta tra hardware, software e firmware?", "o": ["Hardware = istruzioni, Software = parte fisica, Firmware = rete", "Hardware = parte fisica toccabile, Software = istruzioni immateriali, Firmware = software incorporato nell'hardware a meta' strada", "Sono tre sinonimi della stessa cosa", "Firmware e' solo il sistema operativo Windows"], "c": 1,"p":4},
+ {"q": "Cosa significa che il computer e' un 'esecutore di comandi' e cos'e' un algoritmo?", "o": ["Il computer pensa e decide da solo cosa fare", "Il computer esegue esattamente le istruzioni scritte dall'uomo; l'algoritmo e' una sequenza finita, ordinata e non ambigua di passi per risolvere un problema", "Algoritmo e' sinonimo di computer", "Il computer ha iniziativa e creativita' propria"], "c": 1,"p":4},
+ {"q": "Cosa descrive il modello di von Neumann (1945) e lo stored-program concept?", "o": ["Due memorie separate per dati e istruzioni collegate da cavi", "CPU, memoria e I/O collegati da un bus condiviso, con istruzioni e dati nella stessa memoria: cambiare programma significa caricare istruzioni diverse", "Un modello basato solo su ingranaggi meccanici", "Un modello dove la CPU e' fuori dal computer"], "c": 1,"p":4},
+ {"q": "Qual e' la differenza tra RAM, ROM e memorie di massa come HDD e SSD?", "o": ["Sono tutte volatili e uguali", "RAM e' veloce ma volatile, ROM e' permanente e contiene firmware di avvio, HDD/SSD sono memorie di massa secondarie permanenti per grandi quantita' di dati", "ROM e' piu' veloce della RAM", "HDD e SSD sono dentro la CPU"], "c": 1,"p":4},
+ {"q": "Qual e' il ruolo della scheda madre e del chipset?", "o": ["Serve solo a tenere fermo il case", "Collega fisicamente CPU, RAM, slot PCIe, connettori M.2/SATA e I/O; il chipset coordina la comunicazione tra CPU, memoria e periferiche", "Contiene solo la batteria tampone", "E' il sistema operativo"], "c": 1,"p":4},
+ {"q": "Come si classifica correttamente il software secondo la lezione?", "o": ["Solo software di sistema e antivirus", "Software di sistema (gestisce hardware), applicativo (compiti utente) e di programmazione (strumenti per sviluppare altro software)", "Hardware, software e firmware", "Software libero e software a pagamento"], "c": 1,"p":4},
+ {"q": "Qual e' la differenza tra BIOS e UEFI e cos'e' il Secure Boot?", "o": ["Sono la stessa cosa", "BIOS e' testuale, vecchio, lento; UEFI e' moderno, grafico, supporta dischi >2TB con GPT, avvio rapido e Secure Boot che blocca software di avvio non firmato", "UEFI e' un tipo di RAM", "Secure Boot e' un antivirus"], "c": 1,"p":4},
+ {"q": "Qual e' la differenza tra compilatore e interprete?", "o": ["Non c'e' differenza", "Il compilatore traduce tutto il codice sorgente in anticipo creando un file .exe autonomo (es. C), l'interprete esegue riga per riga al volo ogni volta (es. Python)", "L'interprete e' piu' veloce del compilatore", "Il compilatore serve solo per Python"], "c": 1,"p":4},
+ {"q": "Cosa stabilisce la Legge 633/1941 sul software e cos'e' una licenza?", "o": ["Il software e' libero da diritti", "Il software e' opera dell'ingegno protetta automaticamente da diritto d'autore alla creazione; la licenza e' l'atto giuridico che concede il diritto d'uso a condizioni stabilite", "Serve registrarsi per avere diritto d'autore", "La licenza e' l'acquisto della proprieta' del codice"], "c": 1,"p":4},
+ {"q": "Cosa significa 'Gratuito non significa libero da regole'? Confronta freeware, open source e proprietario.", "o": ["Se e' gratis posso copiarlo e modificarlo come voglio", "Anche freeware/adware e' protetto da copyright; open source (GPL/MIT) permette di vedere/modificare codice, proprietario vieta modifica/ridistribuzione", "Open source e' illegale", "Freeware significa che posso rivenderlo"], "c": 1,"p":4},
+ {"q": "Secondo la lezione, quali caratteristiche deve avere una password forte?", "o": ["Nome e data di nascita, corta e facile da ricordare", "Almeno 12 caratteri, non ovvia, diversa per ogni servizio, con maiuscole/minuscole/numeri/simboli, meglio con 2FA e password manager", "Basta 4 cifre come 1234", "La stessa per tutti i servizi"], "c": 1,"p":4},
+ {"q": "Cos'e' la regola del backup 3-2-1?", "o": ["Fare 3 backup sullo stesso PC", "Mantenere 3 copie dei dati, su 2 supporti diversi, di cui 1 off-site (cloud o disco esterno altrove)", "Fare backup solo 1 volta al mese", "3-2-1 e' un tipo di virus"], "c": 1,"p":4},
+ {"q": "Cosa prevede il GDPR e cosa sono le categorie particolari di dati personali?", "o": ["E' una legge americana sulle reti", "Regolamento UE 2016/2018 direttamente applicabile, principi di liceita', minimizzazione, diritto accesso/oblio, notifica breach entro 72h; dati particolari = salute, opinioni politiche, religione, piu' protetti per rischio discriminazione", "Permette di raccogliere tutti i dati possibili", "Riguarda solo i cookie"], "c": 1,"p":4},
+ {"q": "Qual e' la differenza tra segnale analogico e digitale (paragrafo 1)?", "o": ["Sono uguali", "Analogico = continuo, infiniti valori intermedi come manopola volume; digitale = discreto, insieme finito di valori distinti, nei computer quasi sempre solo 0 e 1", "Digitale = continuo, analogico = discreto", "Analogico e' piu' affidabile del digitale"], "c": 1,"p":4},
+ {"q": "Qual e' la definizione formale di digitalizzazione?", "o": ["Copiare un file da una cartella all'altra", "Il processo che trasforma un segnale analogico continuo in sequenza di valori numerici discreti adatti a elaborazione digitale", "Aumentare la risoluzione di uno schermo", "Convertire da PDF a Word"], "c": 1,"p":4},
+ {"q": "Quali sono nell'ordine corretto le tre fasi della digitalizzazione?", "o": ["Codifica, campionamento, quantizzazione", "Campionamento (lettura a intervalli regolari), quantizzazione (approssimazione a livelli discreti), codifica (traduzione in bit)", "Quantizzazione, campionamento, codifica", "Digitalizzazione non ha fasi"], "c": 1,"p":4},
+ {"q": "Cosa fanno ADC e DAC?", "o": ["Sono due tipi di RAM", "ADC converte da analogico a digitale (es. microfono che digitalizza suono), DAC converte da digitale ad analogico (es. cuffia che ricostruisce suono)", "Servono solo per le stampanti", "ADC cancella i dati"], "c": 1,"p":4},
+ {"q": "Perche' 1 byte = 256 combinazioni e' un numero fondamentale?", "o": ["Perche' 256 e' un numero a caso", "Perche' 2^8 = 256 valori diversi (0-255) bastavano per codificare alfabeto inglese completo; poi con cinese/emoji/arabo si e' passati a Unicode", "Perche' 1 byte = 1000 bit", "Perche' 256 e' la velocita' della CPU"], "c": 1,"p":4},
+ {"q": "Cos'e' una codifica dei dati binari?", "o": ["Un tipo di virus", "Una convenzione condivisa che associa in modo univoco a ogni sequenza di bit un significato (numero, carattere, colore, suono) cosi' mittente e destinatario interpretano allo stesso modo", "Un linguaggio segreto non condiviso", "Serve solo per le immagini"], "c": 1,"p":4},
+ {"q": "Cosa distingue ASCII da Unicode e UTF-8 (cenni paragrafo 5)?", "o": ["Sono uguali", "ASCII 1963 = 7 bit, 128 caratteri solo inglese; Unicode 1991 = oltre 149.000 caratteri mondiali, compatibile ASCII; UTF-8 = codifica a lunghezza variabile 1-4 byte, piu' usata sul web", "ASCII e' piu' grande di Unicode", "UTF-8 usa sempre 7 bit"], "c": 1,"p":4},
+ {"q": "Quanto vale il numero 321 (base 10) convertito in base 2?", "o": ["101010101", "101000001", "110000001", "100111000"], "c": 1,"p":4},
+ {"q": "Quanto vale il numero binario 11010010 (base 2) convertito in base 10?", "o": ["180", "212", "210", "202"], "c": 2,"p":4}
+];
+/* ========================================================================= */
+const $=id=>document.getElementById(id);
+const fmt=v=>String(v).replace(".",",");
+const AVV=[];
+const PESI=(()=>{
+  const n=DOMANDE.length,haP=DOMANDE.some(d=>d.p!==undefined);
+  if(!haP)return DOMANDE.map(()=>100/n);
+  if(DOMANDE.some(d=>d.p===undefined))AVV.push("Alcune domande non hanno il peso p: vengono considerate di peso 0.");
+  const s=DOMANDE.reduce((a,d)=>a+(Number(d.p)||0),0);
+  if(Math.abs(s-100)>0.01)AVV.push("La somma dei pesi è "+s+" e non 100: i pesi vengono riportati a 100.");
+  return DOMANDE.map(d=>(Number(d.p)||0)*100/s);
+})();
+if(VOTI[VOTI.length-1][0]<100)AVV.push("L'ultima fascia di VOTI deve avere massimo 100.");
+if(VOTI.some((v,i)=>i&&v[0]<=VOTI[i-1][0]))AVV.push("Le fasce di VOTI devono essere in ordine crescente.");
+const isOk=(x,i)=>x!==null&&x!==undefined&&x!=="-"&&Number(x)===DOMANDE[i].c;
+const percent=a=>Math.round(a.reduce((s,x,i)=>s+(isOk(x,i)?PESI[i]:0),0)*100)/100;
+const voto=pc=>(VOTI.find(([m])=>pc<=m)||VOTI[VOTI.length-1])[1];
+let cur=0,ans=Array(DOMANDE.length).fill(null),nome="",done=false;
+$("t").textContent=TITOLO;$("desc").textContent=DESCRIZIONE;document.title=TITOLO;
+$("dur").textContent="Durata: "+DURATA_MINUTI+" minuti. Il timer parte quando clicchi «Apri la verifica» e non si ferma.";
+if(MODALITA_TEST){$("tb").style.display="block";if(AVV.length)$("tb").textContent+=" ⚠ "+AVV.join(" ⚠ ");$("rst").style.display="";$("rst").onclick=()=>{try{localStorage.removeItem(KEY2)}catch(e){}location.reload()}}
+/* --- protezione anti copia --- */
+["copy","cut","contextmenu","dragstart","selectstart"].forEach(e=>document.addEventListener(e,ev=>{const t=ev.target.nodeType===1?ev.target:ev.target.parentElement;if(!(t&&t.closest("input,textarea,code")))ev.preventDefault()}));
+document.addEventListener("keydown",e=>{
+  if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&["c","x","a","p","s","u"].includes(k)||e.key==="F12"||e.key==="PrintScreen")e.preventDefault();
+});
+function render(){
+  const d=DOMANDE[cur];
+  $("qt").textContent=(cur+1)+". "+d.q;
+  $("opts").innerHTML="";
+  d.o.forEach((t,i)=>{
+    const el=document.createElement("div");el.className="opt"+(ans[cur]===i?" sel":"");
+    el.innerHTML='<span class="box">'+(ans[cur]===i?"✓":"")+'</span><span></span>';
+    el.lastChild.textContent=t;
+    el.onclick=()=>{if(done)return;ans[cur]=i;render()};
+    $("opts").appendChild(el);
+  });
+  $("side").innerHTML="";
+  DOMANDE.forEach((_,i)=>{const b=document.createElement("button");b.textContent="Domanda "+(i+1);if(i===cur)b.className="cur";b.onclick=()=>{cur=i;render()};$("side").appendChild(b)});
+  saveState();$("sq").innerHTML=ans.map(a=>'<i class="'+(a!==null?"done":"")+'"></i>').join("");
+  $("prog").textContent="Risposte: "+ans.filter(a=>a!==null).length+" / "+DOMANDE.length;
+}
+const KEY="verifica_consegnata_"+encodeURIComponent(ID_VERIFICA);
+const KEY2="verifica_incorso_"+encodeURIComponent(ID_VERIFICA);
+const DUR=DURATA_MINUTI*60000;let t0=0,tm=null;
+function saveState(){if(!t0||done)return;try{localStorage.setItem(KEY2,JSON.stringify({n:nome,s:t0,a:ans}))}catch(e){}}
+function tick(){
+  const left=Math.max(0,t0+DUR-Date.now()),s=Math.ceil(left/1000),p=n=>String(n).padStart(2,"0");
+  $("timer").textContent="⏱ "+p(Math.floor(s/3600))+":"+p(Math.floor(s%3600/60))+":"+p(s%60);
+  $("timer").style.color=left<300000?"#dc2626":"";
+  if(left<=0)consegna(true);
+}
+function begin(){
+  $("home").style.display="none";$("quiz").classList.add("on");$("who").textContent=nome;render();
+  tick();if(!done)tm=setInterval(tick,1000);
+}
+function getDone(){if(MODALITA_TEST)return null;try{return localStorage.getItem(KEY)}catch(e){return null}}
+function showDup(c){$("code2").textContent=c;$("dup").classList.add("on")}
+$("start").onclick=()=>{
+  const g=getDone();if(g){showDup(g);return}
+  nome=$("nome").value.trim();
+  if(nome.length<3){alert("Inserisci nome e cognome.");return}
+  t0=Date.now();begin();
+};
+$("submit").onclick=()=>{
+  const miss=ans.filter(a=>a===null).length;
+  $("cmsg").textContent=miss?("Hai "+miss+" domande senza risposta. Consegnare comunque?"):"Vuoi consegnare la verifica?";
+  $("confirm").classList.add("on");
+};
+$("cno").onclick=()=>$("confirm").classList.remove("on");
+function consegna(auto){
+  $("confirm").classList.remove("on");if(done)return;done=true;clearInterval(tm);$("submit").disabled=true;
+  try{localStorage.removeItem(KEY2)}catch(e){}
+  const punti=ans.reduce((s,a,i)=>s+(a===DOMANDE[i].c?1:0),0);
+  const pc=percent(ans);
+  $("score").textContent="Voto: "+fmt(voto(pc))+" / 10";
+  const payload={n:nome,p:punti,t:DOMANDE.length,a:ans.map(a=>a===null?"-":a).join(""),d:new Date(Math.min(Date.now(),t0+DUR)).toISOString()};
+  const cod=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  $("code").textContent=cod;if(!MODALITA_TEST){try{localStorage.setItem(KEY,cod)}catch(e){}}
+  $("saved").textContent="Hai risposto correttamente a "+punti+" domande su "+DOMANDE.length+" (punteggio: "+fmt(pc)+"%).";
+  $("res").classList.add("on");
+  $("saved").textContent+=" Copia il codice qui sotto e incollalo come consegna su Classroom.";
+  if(auto)$("saved").textContent="Tempo scaduto: la verifica è stata consegnata automaticamente. "+$("saved").textContent;
+}
+$("cyes").onclick=()=>consegna(false);
+/* --- area docente --- */
+$("docBtn").onclick=()=>$("doc").classList.add("on");
+$("docx").onclick=()=>$("doc").classList.remove("on");
+$("pinok").onclick=async()=>{
+  if($("pin").value!==PIN_DOCENTE){alert("PIN errato");return}
+  $("pinbox").style.display="none";$("docbody").style.display="block";table();
+};
+const RKEY="verifica_risultati_"+encodeURIComponent(ID_VERIFICA);
+const dec=c=>JSON.parse(decodeURIComponent(escape(atob(c))));
+function loadR(){try{return JSON.parse(localStorage.getItem(RKEY)||"[]")}catch(e){return[]}}
+function saveR(l){try{localStorage.setItem(RKEY,JSON.stringify(l))}catch(e){}}
+function dettaglio(r){
+  const box=$("det");box.innerHTML="";
+  const h=document.createElement("h4");h.textContent="Dettaglio: "+r.n;box.appendChild(h);
+  const t=document.createElement("table");
+  t.innerHTML="<tr><th>#</th><th>Domanda</th><th>Risposta data</th><th>Risposta corretta</th><th>Peso</th></tr>";
+  const L=i=>String.fromCharCode(65+i);
+  DOMANDE.forEach((d,i)=>{
+    const a=r.a[i],ok=isOk(a,i),tr=t.insertRow();
+    const dat=(a===undefined||a==="-")?"(nessuna risposta)":L(+a)+") "+(d.o[+a]||"?");
+    [i+1,d.q,dat,L(d.c)+") "+d.o[d.c],fmt(Math.round(PESI[i]*100)/100)+"%"].forEach((v,j)=>{const td=tr.insertCell();td.textContent=v;if(j===2&&a!==undefined&&a!=="-")td.className=ok?"ok":"ko"});
+  });
+  box.appendChild(t);box.scrollIntoView({block:"nearest"});
+}
+function table(){
+  $("det").innerHTML="";
+  const rows=loadR().map(c=>{try{return dec(c)}catch(e){return null}}).filter(Boolean).sort((a,b)=>a.n.localeCompare(b.n));
+  if(!rows.length){$("tab").textContent="Nessun risultato inserito.";return}
+  const t=document.createElement("table");
+  t.innerHTML="<tr><th>Studente</th><th>Corrette (punteggio)</th><th>Voto</th><th>Data</th>"+DOMANDE.map((_,i)=>"<th>D"+(i+1)+"</th>").join("")+"</tr>";
+  rows.forEach(r=>{
+    const tr=t.insertRow();let p=0,w=0;
+    const cells=DOMANDE.map((d,i)=>{const a=r.a[i];if(a===undefined||a==="-")return["–",""];if(+a===d.c){p++;w+=PESI[i];return[String.fromCharCode(65+ +a),"ok"]}return[String.fromCharCode(65+ +a),"ko"]});
+    [r.n,p+"/"+DOMANDE.length+" ("+fmt(Math.round(w*100)/100)+"%)",fmt(voto(Math.round(w*100)/100))+"/10",new Date(r.d).toLocaleString("it-IT")].forEach(v=>tr.insertCell().textContent=v);
+    tr.cells[0].style.cssText="cursor:pointer;text-decoration:underline";tr.cells[0].onclick=()=>dettaglio(r);
+    cells.forEach(([s,k])=>{const td=tr.insertCell();td.textContent=s;td.className=k});
+  });
+  $("tab").innerHTML="";$("tab").appendChild(t);
+}
+$("dec").onclick=()=>{
+  const l=loadR();let bad=0,add=0;
+  $("paste").value.split(/\s+/).filter(Boolean).forEach(c=>{try{dec(c);if(!l.includes(c)){l.push(c);add++}}catch(e){bad++}});
+  saveR(l);$("paste").value="";$("decout").textContent=add+" aggiunti"+(bad?", "+bad+" non validi":"")+".";table();
+};
+$("clr").onclick=()=>{if(confirm("Svuotare l'elenco?")){saveR([]);table()}};
+function copyText(t,b){
+  const o=b.textContent,ok=()=>{b.textContent="Copiato ✓";setTimeout(()=>b.textContent=o,1800)};
+  const fb=()=>{const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");ok()}catch(e){}x.remove()};
+  navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb();
+}
+$("copy").onclick=e=>copyText($("code").textContent,e.target);
+$("copy2").onclick=e=>copyText($("code2").textContent,e.target);
+$("exit").onclick=()=>{if(MODALITA_TEST){location.reload();return}$("res").classList.remove("on");$("quiz").classList.remove("on");$("home").style.display="";$("nome").value=""};
+$("dupok").onclick=()=>$("dup").classList.remove("on");
+if(getDone())showDup(getDone());
+else{try{const st=JSON.parse(localStorage.getItem(KEY2)||"null");if(st){nome=st.n;t0=st.s;ans=st.a;begin()}}catch(e){}}
+</script>
+</body>
+</html>
