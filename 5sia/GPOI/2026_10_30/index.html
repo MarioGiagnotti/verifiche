@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verifica</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1d2433;--mut:#6b7488;--pri:#2f5bea;--ok:#16a34a;--bd:#d9deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1b2030;--tx:#e8ecf5;--mut:#98a2b8;--pri:#6f93ff;--ok:#34d27b;--bd:#2c3348}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1b2030;--tx:#e8ecf5;--mut:#98a2b8;--pri:#6f93ff;--ok:#34d27b;--bd:#2c3348}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.protect,.protect *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.protect img{pointer-events:none}
+@media print{body{display:none!important}}
+.wrap{max-width:560px;margin:8vh auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:24px}
+h1{margin:0 0 6px;font-size:24px}p{color:var(--mut);line-height:1.5}
+input[type=text]{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:16px;margin:8px 0 16px;-webkit-user-select:text;user-select:text}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:12px 20px;font-size:16px;cursor:pointer;font-weight:600}
+.btn.sec{background:transparent;color:var(--pri);border:1px solid var(--pri)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:18px;font-size:13px;text-decoration:underline}
+#quiz{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#quiz.on{display:flex}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--bd);background:var(--card)}
+.main{flex:1;display:flex;min-height:0}
+.side{width:170px;border-right:1px solid var(--bd);background:var(--card);padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.side button{padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);cursor:pointer;text-align:left;font-size:14px}
+.side button.cur{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri) inset;font-weight:600}
+.center{flex:1;padding:28px;overflow-y:auto}
+.q{font-size:20px;font-weight:600;margin-bottom:20px;line-height:1.4}
+.opt{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--bd);border-radius:10px;background:var(--card);margin-bottom:10px;cursor:pointer;font-size:16px}
+.opt.sel{border-color:var(--pri)}
+.box{width:22px;height:22px;border:2px solid var(--mut);border-radius:5px;flex:none;display:grid;place-items:center;color:#fff;font-size:14px}
+.opt.sel .box{background:var(--pri);border-color:var(--pri)}
+.bottom{display:flex;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid var(--bd);background:var(--card)}
+.sq{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+.sq i{width:26px;height:26px;border-radius:6px;background:var(--bd);display:block}
+.sq i.done{background:var(--ok)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;padding:16px;z-index:9}
+.modal.on{display:grid}
+.modal .card{max-width:440px;width:100%;text-align:center}
+.big{font-size:44px;font-weight:700;color:var(--pri);margin:8px 0}
+code{display:block;word-break:break-all;background:var(--bg);padding:10px;border-radius:8px;font-size:12px;-webkit-user-select:text;user-select:text;margin:8px 0}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}td,th{padding:6px;border-bottom:1px solid var(--bd)}
+#doc .card{max-width:980px}.tw{overflow-x:auto}.ok{color:var(--tx);font-weight:700}.ko{color:#dc2626;font-weight:700}textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;margin:8px 0;-webkit-user-select:text;user-select:text}
+@media (max-width:640px){.side{width:96px;padding:8px}.side button{font-size:12px;padding:8px 6px}.center{padding:16px}}
+</style>
+</head>
+<body class="protect">
+
+<div class="wrap" id="home">
+  <div class="card">
+    <div id="tb" style="display:none;background:#fde68a;color:#78350f;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13px">MODALITÀ TEST attiva: la verifica si può ripetere. Prima di darla agli studenti imposta MODALITA_TEST = false.</div>
+    <h1 id="t">Verifica</h1>
+    <p id="desc"></p>
+    <p id="dur" style="margin-top:-8px"></p>
+    <label for="nome">Nome e cognome</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Es. Mario Rossi">
+    <button class="btn" id="start">Apri la verifica</button><br>
+    <button class="link" id="docBtn">Area docente</button>
+  </div>
+</div>
+
+<div id="quiz">
+  <div class="top"><strong id="who"></strong><strong id="timer" style="font-size:20px;font-variant-numeric:tabular-nums"></strong><span id="prog" style="color:var(--mut)"></span><button class="btn sec" id="rst" style="display:none;padding:6px 10px;font-size:13px">↺ Test</button></div>
+  <div class="main">
+    <div class="side" id="side"></div>
+    <div class="center"><div class="q" id="qt"></div><div id="opts"></div></div>
+  </div>
+  <div class="bottom"><div class="sq" id="sq"></div><button class="btn" id="submit">Consegna</button></div>
+</div>
+
+<div class="modal" id="res"><div class="card">
+  <h2 style="margin:0">Verifica consegnata</h2>
+  <div class="big" id="score"></div>
+  <p id="saved"></p>
+  <p style="margin-bottom:0;font-size:13px">Codice di consegna (conservalo):</p><code id="code"></code>
+  <button class="btn sec" id="copy">Copia codice</button> <button class="btn" id="exit">Esci</button>
+</div></div>
+
+<div class="modal" id="dup"><div class="card">
+  <h2 style="margin:0 0 8px">Verifica già eseguita</h2>
+  <p>Hai già consegnato questa verifica da questo dispositivo. Non è possibile ripeterla.</p>
+  <p style="margin-bottom:0;font-size:13px">Il tuo codice di consegna:</p><code id="code2"></code>
+  <button class="btn sec" id="copy2">Copia codice</button> <button class="btn" id="dupok">Chiudi</button>
+</div></div>
+
+<div class="modal" id="confirm"><div class="card">
+  <h3 id="cmsg" style="margin-top:0"></h3>
+  <button class="btn sec" id="cno">Torna alla verifica</button> <button class="btn" id="cyes">Consegna</button>
+</div></div>
+
+<div class="modal" id="doc"><div class="card" style="max-height:90vh;overflow:auto;text-align:left">
+  <h3 style="margin-top:0">Area docente</h3>
+  <div id="pinbox"><input type="text" id="pin" placeholder="PIN docente"><button class="btn" id="pinok">Entra</button></div>
+  <div id="docbody" style="display:none">
+    <p>Incolla i codici di consegna degli studenti (uno per riga, copiati da Classroom):</p>
+    <textarea id="paste" placeholder="Un codice per riga"></textarea>
+    <button class="btn" id="dec">Aggiungi ai risultati</button> <button class="btn sec" id="clr">Svuota elenco</button>
+    <p id="decout"></p>
+    <p style="font-size:13px;color:var(--mut)">Nelle colonne D1, D2… la lettera è la risposta data (verde = corretta, rossa = errata, – = nessuna risposta). Clicca sul nome di uno studente per vedere il dettaglio domanda per domanda.</p>
+    <div class="tw" id="tab"></div>
+    <div id="det" style="margin-top:14px"></div>
+  </div>
+  <button class="link" id="docx">Chiudi</button>
+</div></div>
+
+<script>
+/* ===================== CONFIGURAZIONE (modificabile) ===================== */
+const TITOLO = "Verifica GPOI A5 M1 L01-L02 - Microeconomia, Vincolo, Domanda Offerta";
+const DESCRIZIONE = "20 domande da GPOI L01-L02 + 5 da completare. Peso 3% prime 20, 8% ultime 5. Tempo 60 minuti.";
+const PIN_DOCENTE = "1234";
+const ID_VERIFICA = "GPOI-A5-M1-L01-L02-2026-10-30"; // identificativo UNICO di questa verifica: cambialo per ogni nuova verifica (non riusare mai lo stesso)
+const DURATA_MINUTI = 60; // durata della verifica in minuti
+const MODALITA_TEST = false; // true = si può ripetere più volte (test). Per la verifica vera: false
+// PESI: se nessuna domanda ha il campo "p", tutte le domande pesano uguale (100/N ciascuna).
+// Per pesi diversi aggiungi p:<percentuale> a OGNI domanda, es. {"q":"...","o":[...],"c":1,"p":20}. La somma deve fare 100.
+// VOTI: [massima percentuale di punteggio per quella fascia, voto in decimi]. L'ultima fascia deve avere 100.
+// (Questa tabella equivale alla precedente per 25 domande: 3 corrette = 12%, 7 = 28%, 10 = 40%, ...)
+const VOTI = [[15,4],[30,4.5],[40,5],[45,5.5],[50,6],[55,6.5],[65,7],[70,7.5],[75,8],[80,8.5],[95,9],[100,10]];
+const DOMANDE = [
+ {"q": "Qual e' la differenza tra microeconomia e macroeconomia?", "o": ["Microeconomia studia singoli consumatori, macroeconomia studia il sistema economico nel suo insieme","Microeconomia studia il PIL nazionale, macroeconomia studia il singolo consumatore","Sono la stessa cosa con nomi diversi senza distinzione","Microeconomia studia solo le banche, macroeconomia solo le famiglie"], "c": 0,"p":3},
+ {"q": "Cosa distingue il concetto di valore dal concetto di prezzo?", "o": ["Sono sinonimi identici senza alcuna differenza teorica","Il prezzo e' la moneta scambiata sul mercato in un momento, il valore e' il fondamento teorico che spiega perche' una merce vale qualcosa","Il valore e' sempre piu' basso del prezzo di mercato mentre il prezzo può aumentare","Il prezzo determina il valore senza alcuna teoria. Il valore è sempre determinato dal prezzo"], "c": 1,"p":3},
+ {"q": "Secondo la teoria classica, cosa determina il valore di una merce?", "o": ["La scarsita' e l'utilita' marginale decrescente del bene","Il colore e la forma esteriore del bene","La quantita' di lavoro necessaria per produrla","Il desiderio momentaneo del singolo consumatore per avere quel bene"], "c": 2,"p":3},
+ {"q": "Cosa significa che un bene ha rilievo economico solo se e' scarso?", "o": ["Significa che deve essere molto costoso per forza","Significa che deve essere raro in natura come l'oro","Significa che deve essere prodotto all'estero","Significa che non e' disponibile per chiunque lo desideri"], "c": 3,"p":3},
+ {"q": "Cosa si intende per costo-opportunita' e uso alternativo?", "o": ["Ogni scelta comporta rinuncia","Il costo di produzione di un bene senza alternative","E' il prezzo pagato al fornitore per l'acquisto","E' solo un concetto contabile senza effetto reale"], "c": 0,"p":3},
+ {"q": "Nel caso numerico del vincolo di bilancio con R=70€, p1=7€ e p2=14€ , qual e' l'equazione corretta?", "o": ["7*4+14*3=70","7*q1+14*q2=70","x+y=70","14*q1+7*q2=70"], "c": 1,"p":3},
+ {"q": "Cosa rappresenta il segmento AB nel grafico del vincolo di bilancio?", "o": ["Tutti i panieri che costano meno del reddito disponibile","Solo un punto (q1,q2) che e' fuori dal vincolo","Tutti i panieri che esauriscono esattamente il reddito disponibile","L'insieme di beni gratuiti senza costo"], "c": 2,"p":3},
+ {"q": "Cosa significa razionalita' soggettiva ed equilibrio oggettivo nel modello marginalista?", "o": ["Significa che tutti pensano allo stesso modo in modo oggettivo","Significa che non esiste alcuna razionalita' nelle scelte economiche","Equilibrio significa che nessuno compra piu' nulla che non sia necessario; Razionalità significa che le scelte sono corrette secondo una particolare teoria microeconomica","Razionalita': ogni operatore sceglie secondo le proprie preferenze; equilibrio: scelte di tutti risultano reciprocamente compatibili"], "c": 3,"p":3},
+ {"q": "In cosa consiste il paradosso acqua-diamante di Adam Smith (1776)?", "o": ["L'acqua indispensabile alla vita vale pochissimo sul mercato, il diamante con utilita' pratica quasi nulla vale moltissimo in termini di scambio","L'acqua indispensabile alla vita vale e' inutile e il diamante non necessario e' indispensabile per vivere","Acqua e diamante hanno sempre lo stesso prezzo di mercato, il loro acquisto dipende dalla circostanza in cui il soggetto si trova","Il paradosso riguarda solo il prezzo dei due beni ma non prende in considerazione il loro valore"], "c": 0,"p":3},
+ {"q": "Come spiega la teoria neoclassica il paradosso acqua-diamante?", "o": ["Con la quantita' di lavoro necessaria per estrarre acqua e diamanti","Con l'utilita' marginale decrescente","Con il fatto che il diamante e' piu' bello dell'acqua","Con il costo di trasporto dei due beni ed il lavoro impiegato per produrli"], "c": 1,"p":3},
+ {"q": "Come si definisce la domanda e com'e' la sua curva?", "o": ["Quantita' di bene che il produttore vuole vendere, curva a pendenza positiva","Quantita' fissa che non dipende dal prezzo ma solo dal valore dei due beni","Quantita' di bene che il consumatore e' disposto ad acquistare al variare del prezzo","Curva a pendenza positiva o negativa in base al variare dei prezzi dei due beni"], "c": 2,"p":3},
+ {"q": "Cosa si intende per offerta e com'e' la sua curva rispetto alla domanda?", "o": ["Quantita' che il consumatore vuole comprare, curva negativa come la domanda","Quantita' che non dipende mai dal prezzo di vendita ma dal valore ed ha pendenza positiva","Curva sempre decrescente come la domanda ma può essere elastica o rigida","Quantita' che il produttore e' disposto a vendere a un dato prezzo, curva a pendenza positiva"], "c": 3,"p":3},
+ {"q": "Qual e' la differenza tra movimento lungo la curva e spostamento della curva di domanda?", "o": ["Aumento di prezzo a reddito costante causa movimento lungo la stessa curva, aumento di reddito a prezzo costante causa spostamento dell'intera curva verso destra","Sono la stessa cosa senza distinzione. L'aumento del prezzo determina uno spostamento della curva così come un aumento del reddito","Entrambi sono causati solo dal prezzo del bene. Se il prezzo aumenta posso avere un aumento del reddito","Lo spostamento e' causato solo dal prezzo, il movimento dal reddito"], "c": 0,"p":3},
+ {"q": "Nell'equazione della curva di domanda con i due punti sulla curva (10,80) e (40,20), cosa si ricava?", "o": ["Si ricava solo il prezzo medio del bene senza curva","Si ricava l'equazione della retta ma non posso definire la pendenza","Si ricava il reddito del consumatore","Si ricava una curva a pendenza positiva"], "c": 1,"p":3},
+ {"q": "Cosa significa domanda rigida ed elastica?", "o": ["Rigida significa che non si compra mai nulla, elastica che si compra tutto","Rigida ed elastica sono sinonimi","Domanda rigida ha curva molto pendente, domanda elastica ha curva poco pendente","Rigida significa orizzontale e vicina all'asse delle ascisse, elastica verticale e vicina all'asse delle ordinate"], "c": 2,"p":3},
+ {"q": "Cosa sono beni sostitutivi e beni complementari?", "o": ["Sostitutivi soddisfano bisogni diversi, complementari soddisfano esigenze alternative","Sostitutivi e complementari sono la stessa categoria economica","Complementari sono beni che si sostituiscono a vicenda mentre sostitutivi sono beni che posso acquistare a prezzi diversi","Sostitutivi soddisfano lo stesso bisogno in modo diverso, complementari il consumo dell'uno implica l'altro"], "c": 3,"p":3},
+ {"q": "Cosa significa il principio del ceteris paribus?", "o": ["Significa a parita' di tutte le altre condizioni","Significa analizzare tutte le variabili insieme contemporaneamente","Significa che le condizioni cambiano sempre tutte insieme","E' un principio che vale solo per la macroeconomia"], "c": 0,"p":3},
+ {"q": "Come si calcola il ricavo del produttore conoscendo prezzo e quantita'?", "o": ["Ricavo = prezzo + quantita' venduta","Ricavo = prezzo * quantita' venduta, ad esempio se q=70 e p ricavato da curva q=80-10/3 p, ricavo e' p per q","Ricavo = prezzo - quantita' venduta","Ricavo non dipende mai dal prezzo"], "c": 1,"p":3},
+ {"q": "Quando accade che la curva di domanda non e' una retta ma un ramo di iperbole?", "o": ["Quando la domanda non dipende mai dal prezzo e l'offerta è fortemente dipendente dal prezzo","Quando la quantità domandata decresce sensibilmente al diminuire del prezzo","Quando la quantita' domandata cresce molto piu' rapidamente quando il prezzo si avvicina a zero","Quando il bene ha prezzo fisso nonostante il produttore decida di produrre una quantità molto maggiore di quel bene"], "c": 2,"p":3},
+ {"q": "Cosa succede se aumenta il reddito del consumatore a parita' di prezzo del bene?", "o": ["La curva di domanda si sposta a sinistra verso l'origine","La curva di domanda resta identica senza spostamenti","Il consumatore compra meno del bene","La curva di domanda si sposta verso destra"], "c": 3,"p":3},
+ {"q": "Un consumatore ha R=90€, bene b₁=panino p₁=5€ e bene b₂=bibita p₂=10€. Se decide di acquistare 3 bibite quanti panini al massimo può acquistare?", "o": ["12","13","14","15"], "c": 0,"p":8},
+ {"q": "Un consumatore ha R=120€, bene b₁=biglietto cinema p₁=8€ e bene b₂=popcorn p₂=12€. Qual è l'equazione del vincolo di bilancio?", "o": ["q2=120-8*q1","q2=10-(2/3)*q1","q1+q2=120","q2=12+(2/3)*q1"], "c": 1,"p":8},
+ {"q": "La curva di domanda è p=200-20q. Se il prezzo vale p=20 quanta vale la quantità acquistabile?", "o": ["q=10","q=20","q=9","q=5"], "c": 2,"p":8},
+ {"q": "La curva di domanda è p=815-10q. Se il prezzo iniziale vale p=10 e c'è un aumento di prezzo del 50% quanto vale la quantità acquistabile?", "o": ["80","15","10","100"], "c": 0,"p":8},
+ {"q": "La curva di offerta è p=30+10q. Se la quantità iniziale vale q=10 e e la quantità dopo un certo periodo raddoppia, quanto vale il nuovo prezzo finale?", "o": ["il prezzo raddoppia","p=110","p=100","p=1000"], "c": 1,"p":8},
+];
+
+/* ========================================================================= */
+const $=id=>document.getElementById(id);
+const fmt=v=>String(v).replace(".",",");
+const AVV=[];
+const PESI=(()=>{
+  const n=DOMANDE.length,haP=DOMANDE.some(d=>d.p!==undefined);
+  if(!haP)return DOMANDE.map(()=>100/n);
+  if(DOMANDE.some(d=>d.p===undefined))AVV.push("Alcune domande non hanno il peso p: vengono considerate di peso 0.");
+  const s=DOMANDE.reduce((a,d)=>a+(Number(d.p)||0),0);
+  if(Math.abs(s-100)>0.01)AVV.push("La somma dei pesi è "+s+" e non 100: i pesi vengono riportati a 100.");
+  return DOMANDE.map(d=>(Number(d.p)||0)*100/s);
+})();
+if(VOTI[VOTI.length-1][0]<100)AVV.push("L'ultima fascia di VOTI deve avere massimo 100.");
+if(VOTI.some((v,i)=>i&&v[0]<=VOTI[i-1][0]))AVV.push("Le fasce di VOTI devono essere in ordine crescente.");
+const isOk=(x,i)=>x!==null&&x!==undefined&&x!=="-"&&Number(x)===DOMANDE[i].c;
+const percent=a=>Math.round(a.reduce((s,x,i)=>s+(isOk(x,i)?PESI[i]:0),0)*100)/100;
+const voto=pc=>(VOTI.find(([m])=>pc<=m)||VOTI[VOTI.length-1])[1];
+let cur=0,ans=Array(DOMANDE.length).fill(null),nome="",done=false;
+$("t").textContent=TITOLO;$("desc").textContent=DESCRIZIONE;document.title=TITOLO;
+$("dur").textContent="Durata: "+DURATA_MINUTI+" minuti. Il timer parte quando clicchi «Apri la verifica» e non si ferma.";
+if(MODALITA_TEST){$("tb").style.display="block";if(AVV.length)$("tb").textContent+=" ⚠ "+AVV.join(" ⚠ ");$("rst").style.display="";$("rst").onclick=()=>{try{localStorage.removeItem(KEY2)}catch(e){}location.reload()}}
+
+/* --- protezione anti copia --- */
+["copy","cut","contextmenu","dragstart","selectstart"].forEach(e=>document.addEventListener(e,ev=>{const t=ev.target.nodeType===1?ev.target:ev.target.parentElement;if(!(t&&t.closest("input,textarea,code")))ev.preventDefault()}));
+document.addEventListener("keydown",e=>{
+  if(["INPUT","TEXTAREA"].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&["c","x","a","p","s","u"].includes(k)||e.key==="F12"||e.key==="PrintScreen")e.preventDefault();
+});
+
+function render(){
+  const d=DOMANDE[cur];
+  $("qt").textContent=(cur+1)+". "+d.q;
+  $("opts").innerHTML="";
+  d.o.forEach((t,i)=>{
+    const el=document.createElement("div");el.className="opt"+(ans[cur]===i?" sel":"");
+    el.innerHTML='<span class="box">'+(ans[cur]===i?"✓":"")+'</span><span></span>';
+    el.lastChild.textContent=t;
+    el.onclick=()=>{if(done)return;ans[cur]=i;render()};
+    $("opts").appendChild(el);
+  });
+  $("side").innerHTML="";
+  DOMANDE.forEach((_,i)=>{const b=document.createElement("button");b.textContent="Domanda "+(i+1);if(i===cur)b.className="cur";b.onclick=()=>{cur=i;render()};$("side").appendChild(b)});
+  saveState();$("sq").innerHTML=ans.map(a=>'<i class="'+(a!==null?"done":"")+'"></i>').join("");
+  $("prog").textContent="Risposte: "+ans.filter(a=>a!==null).length+" / "+DOMANDE.length;
+}
+const KEY="verifica_consegnata_"+encodeURIComponent(ID_VERIFICA);
+const KEY2="verifica_incorso_"+encodeURIComponent(ID_VERIFICA);
+const DUR=DURATA_MINUTI*60000;let t0=0,tm=null;
+function saveState(){if(!t0||done)return;try{localStorage.setItem(KEY2,JSON.stringify({n:nome,s:t0,a:ans}))}catch(e){}}
+function tick(){
+  const left=Math.max(0,t0+DUR-Date.now()),s=Math.ceil(left/1000),p=n=>String(n).padStart(2,"0");
+  $("timer").textContent="⏱ "+p(Math.floor(s/3600))+":"+p(Math.floor(s%3600/60))+":"+p(s%60);
+  $("timer").style.color=left<300000?"#dc2626":"";
+  if(left<=0)consegna(true);
+}
+function begin(){
+  $("home").style.display="none";$("quiz").classList.add("on");$("who").textContent=nome;render();
+  tick();if(!done)tm=setInterval(tick,1000);
+}
+function getDone(){if(MODALITA_TEST)return null;try{return localStorage.getItem(KEY)}catch(e){return null}}
+function showDup(c){$("code2").textContent=c;$("dup").classList.add("on")}
+$("start").onclick=()=>{
+  const g=getDone();if(g){showDup(g);return}
+  nome=$("nome").value.trim();
+  if(nome.length<3){alert("Inserisci nome e cognome.");return}
+  t0=Date.now();begin();
+};
+$("submit").onclick=()=>{
+  const miss=ans.filter(a=>a===null).length;
+  $("cmsg").textContent=miss?("Hai "+miss+" domande senza risposta. Consegnare comunque?"):"Vuoi consegnare la verifica?";
+  $("confirm").classList.add("on");
+};
+$("cno").onclick=()=>$("confirm").classList.remove("on");
+function consegna(auto){
+  $("confirm").classList.remove("on");if(done)return;done=true;clearInterval(tm);$("submit").disabled=true;
+  try{localStorage.removeItem(KEY2)}catch(e){}
+  const punti=ans.reduce((s,a,i)=>s+(a===DOMANDE[i].c?1:0),0);
+  const pc=percent(ans);
+  $("score").textContent="Voto: "+fmt(voto(pc))+" / 10";
+  const payload={n:nome,p:punti,t:DOMANDE.length,a:ans.map(a=>a===null?"-":a).join(""),d:new Date(Math.min(Date.now(),t0+DUR)).toISOString()};
+  const cod=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  $("code").textContent=cod;if(!MODALITA_TEST){try{localStorage.setItem(KEY,cod)}catch(e){}}
+  $("saved").textContent="Hai risposto correttamente a "+punti+" domande su "+DOMANDE.length+" (punteggio: "+fmt(pc)+"%).";
+  $("res").classList.add("on");
+  $("saved").textContent+=" Copia il codice qui sotto e incollalo come consegna su Classroom.";
+  if(auto)$("saved").textContent="Tempo scaduto: la verifica è stata consegnata automaticamente. "+$("saved").textContent;
+}
+$("cyes").onclick=()=>consegna(false);
+/* --- area docente --- */
+$("docBtn").onclick=()=>$("doc").classList.add("on");
+$("docx").onclick=()=>$("doc").classList.remove("on");
+$("pinok").onclick=async()=>{
+  if($("pin").value!==PIN_DOCENTE){alert("PIN errato");return}
+  $("pinbox").style.display="none";$("docbody").style.display="block";table();
+};
+const RKEY="verifica_risultati_"+encodeURIComponent(ID_VERIFICA);
+const dec=c=>JSON.parse(decodeURIComponent(escape(atob(c))));
+function loadR(){try{return JSON.parse(localStorage.getItem(RKEY)||"[]")}catch(e){return[]}}
+function saveR(l){try{localStorage.setItem(RKEY,JSON.stringify(l))}catch(e){}}
+function dettaglio(r){
+  const box=$("det");box.innerHTML="";
+  const h=document.createElement("h4");h.textContent="Dettaglio: "+r.n;box.appendChild(h);
+  const t=document.createElement("table");
+  t.innerHTML="<tr><th>#</th><th>Domanda</th><th>Risposta data</th><th>Risposta corretta</th><th>Peso</th></tr>";
+  const L=i=>String.fromCharCode(65+i);
+  DOMANDE.forEach((d,i)=>{
+    const a=r.a[i],ok=isOk(a,i),tr=t.insertRow();
+    const dat=(a===undefined||a==="-")?"(nessuna risposta)":L(+a)+") "+(d.o[+a]||"?");
+    [i+1,d.q,dat,L(d.c)+") "+d.o[d.c],fmt(Math.round(PESI[i]*100)/100)+"%"].forEach((v,j)=>{const td=tr.insertCell();td.textContent=v;if(j===2&&a!==undefined&&a!=="-")td.className=ok?"ok":"ko"});
+  });
+  box.appendChild(t);box.scrollIntoView({block:"nearest"});
+}
+function table(){
+  $("det").innerHTML="";
+  const rows=loadR().map(c=>{try{return dec(c)}catch(e){return null}}).filter(Boolean).sort((a,b)=>a.n.localeCompare(b.n));
+  if(!rows.length){$("tab").textContent="Nessun risultato inserito.";return}
+  const t=document.createElement("table");
+  t.innerHTML="<tr><th>Studente</th><th>Corrette (punteggio)</th><th>Voto</th><th>Data</th>"+DOMANDE.map((_,i)=>"<th>D"+(i+1)+"</th>").join("")+"</tr>";
+  rows.forEach(r=>{
+    const tr=t.insertRow();let p=0,w=0;
+    const cells=DOMANDE.map((d,i)=>{const a=r.a[i];if(a===undefined||a==="-")return["–",""];if(+a===d.c){p++;w+=PESI[i];return[String.fromCharCode(65+ +a),"ok"]}return[String.fromCharCode(65+ +a),"ko"]});
+    [r.n,p+"/"+DOMANDE.length+" ("+fmt(Math.round(w*100)/100)+"%)",fmt(voto(Math.round(w*100)/100))+"/10",new Date(r.d).toLocaleString("it-IT")].forEach(v=>tr.insertCell().textContent=v);
+    tr.cells[0].style.cssText="cursor:pointer;text-decoration:underline";tr.cells[0].onclick=()=>dettaglio(r);
+    cells.forEach(([s,k])=>{const td=tr.insertCell();td.textContent=s;td.className=k});
+  });
+  $("tab").innerHTML="";$("tab").appendChild(t);
+}
+$("dec").onclick=()=>{
+  const l=loadR();let bad=0,add=0;
+  $("paste").value.split(/\s+/).filter(Boolean).forEach(c=>{try{dec(c);if(!l.includes(c)){l.push(c);add++}}catch(e){bad++}});
+  saveR(l);$("paste").value="";$("decout").textContent=add+" aggiunti"+(bad?", "+bad+" non validi":"")+".";table();
+};
+$("clr").onclick=()=>{if(confirm("Svuotare l'elenco?")){saveR([]);table()}};
+function copyText(t,b){
+  const o=b.textContent,ok=()=>{b.textContent="Copiato ✓";setTimeout(()=>b.textContent=o,1800)};
+  const fb=()=>{const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");ok()}catch(e){}x.remove()};
+  navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb();
+}
+$("copy").onclick=e=>copyText($("code").textContent,e.target);
+$("copy2").onclick=e=>copyText($("code2").textContent,e.target);
+$("exit").onclick=()=>{if(MODALITA_TEST){location.reload();return}$("res").classList.remove("on");$("quiz").classList.remove("on");$("home").style.display="";$("nome").value=""};
+$("dupok").onclick=()=>$("dup").classList.remove("on");
+if(getDone())showDup(getDone());
+else{try{const st=JSON.parse(localStorage.getItem(KEY2)||"null");if(st){nome=st.n;t0=st.s;ans=st.a;begin()}}catch(e){}}
+</script>
+</body>
+</html>
